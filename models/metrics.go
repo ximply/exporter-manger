@@ -4,8 +4,32 @@ import (
 	"github.com/ximply/exporter-manger/utils"
 	"github.com/ximply/exporter-manger/config"
 	"strings"
-        "fmt"
+	"fmt"
+	"net"
+	"net/http"
+	"io/ioutil"
+	"context"
 )
+
+type UnixResponse struct {
+	Rsp string
+	Status string
+}
+
+func existsMetric(metric string, filters map[string]string) bool {
+	if filters == nil {
+		return true
+	}
+
+	if len(filters) == 0 {
+		return true
+	}
+
+	if _, ok := filters[metric]; ok {
+		return true
+	}
+	return false
+}
 
 func overFilters(src string, filters map[string]string) string {
 	ret := ""
@@ -21,7 +45,7 @@ func overFilters(src string, filters map[string]string) string {
 			metric = utils.Substr(tmp, 0, strings.Index(tmp, "{"))
 		}
 		fmt.Println(metric)
-		if utils.ExistsMetric(metric, filters) {
+		if existsMetric(metric, filters) {
 			ret += s
 			ret += "\n"
 		}
@@ -30,8 +54,37 @@ func overFilters(src string, filters map[string]string) string {
 	return ret
 }
 
+func metricsFromUnixSock(unixSockFile string, metricsPath string) UnixResponse {
+	rsp := UnixResponse{
+		Rsp: "",
+		Status: "500",
+	}
+	c := http.Client{
+		Transport: &http.Transport{
+			DialContext: func(_ context.Context, _, _ string) (net.Conn, error) {
+				return net.Dial("unix", unixSockFile)
+			},
+		},
+		Timeout: config.NodeConfig().BaseCfg.Timeout,
+	}
+	res, err := c.Get(fmt.Sprintf("http://unix/%s", metricsPath))
+	if err != nil {
+		res.Body.Close()
+		return rsp
+	}
+
+	body, err := ioutil.ReadAll(res.Body)
+	res.Body.Close()
+	if err != nil {
+		return rsp
+	}
+	rsp.Rsp = string(body)
+	rsp.Status = "200"
+	return rsp
+}
+
 func NodeMetrics() string {
-	rsp := utils.MetricsFromUnixSock(config.NodeConfig().BaseCfg.UnixSockFile,
+	rsp := metricsFromUnixSock(config.NodeConfig().BaseCfg.UnixSockFile,
 		config.NodeConfig().BaseCfg.MetricsPath)
 	if strings.Compare(rsp.Status, "200") != 0 {
 		return ""
@@ -41,7 +94,7 @@ func NodeMetrics() string {
 }
 
 func RedisMetrics() string {
-	rsp := utils.MetricsFromUnixSock(config.RedisConfig().BaseCfg.UnixSockFile,
+	rsp := metricsFromUnixSock(config.RedisConfig().BaseCfg.UnixSockFile,
 		config.RedisConfig().BaseCfg.MetricsPath)
 	if strings.Compare(rsp.Status, "200") != 0 {
 		return ""
