@@ -15,6 +15,14 @@ type UnixResponse struct {
 }
 
 func ExistsMetric(metric string, filters map[string]string) bool {
+	if filters == nil {
+		return true
+	}
+
+	if len(filters) == 0 {
+		return true
+	}
+
 	if _, ok := filters[metric]; ok {
 		return true
 	}

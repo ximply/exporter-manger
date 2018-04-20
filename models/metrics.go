@@ -7,27 +7,21 @@ import (
         "fmt"
 )
 
-func NodeMetrics() string {
-	rsp := utils.MetricsFromUnixSock(config.NodeConfig().BaseCfg.UnixSockFile,
-		config.NodeConfig().BaseCfg.MetricsPath)
-	if strings.Compare(rsp.Status, "200") != 0 {
-		return ""
-	}
-
+func overFilters(src string, filters map[string]string) string {
 	ret := ""
-	metrics := strings.Split(rsp.Rsp, "\n")
+	metrics := strings.Split(src, "\n")
 	for _, s := range metrics {
 		if strings.HasPrefix(s, "#") {
 			continue
 		}
 
-        tmp := utils.Substr(s, 0, strings.Index(s, " "))
+		tmp := utils.Substr(s, 0, strings.Index(s, " "))
 		metric := tmp
 		if strings.Contains(tmp, "{") {
 			metric = utils.Substr(tmp, 0, strings.Index(tmp, "{"))
 		}
-                fmt.Println(metric)
-		if utils.ExistsMetric(metric, config.NodeConfig().BaseCfg.Filters) {
+		fmt.Println(metric)
+		if utils.ExistsMetric(metric, filters) {
 			ret += s
 			ret += "\n"
 		}
@@ -36,3 +30,22 @@ func NodeMetrics() string {
 	return ret
 }
 
+func NodeMetrics() string {
+	rsp := utils.MetricsFromUnixSock(config.NodeConfig().BaseCfg.UnixSockFile,
+		config.NodeConfig().BaseCfg.MetricsPath)
+	if strings.Compare(rsp.Status, "200") != 0 {
+		return ""
+	}
+
+	return overFilters(rsp.Rsp, config.NodeConfig().BaseCfg.Filters)
+}
+
+func RedisMetrics() string {
+	rsp := utils.MetricsFromUnixSock(config.RedisConfig().BaseCfg.UnixSockFile,
+		config.RedisConfig().BaseCfg.MetricsPath)
+	if strings.Compare(rsp.Status, "200") != 0 {
+		return ""
+	}
+
+	return overFilters(rsp.Rsp, config.RedisConfig().BaseCfg.Filters)
+}

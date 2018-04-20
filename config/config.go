@@ -8,6 +8,7 @@ import (
 
 type GlobalConfig struct {
 	NodeCfg Node
+	RedisCfg Redis
 }
 
 type BaseConfig struct {
@@ -20,6 +21,10 @@ type BaseConfig struct {
 }
 
 type Node struct {
+	BaseCfg BaseConfig
+}
+
+type Redis struct {
 	BaseCfg BaseConfig
 }
 
@@ -51,8 +56,36 @@ func Init() {
 			globalCfg.NodeCfg.BaseCfg.Filters = m
 		}
 	}
+
+	// redis exporter
+	globalCfg.RedisCfg.BaseCfg.Enable = beego.AppConfig.DefaultBool("redis_exporter", false)
+	if RedisConfig().BaseCfg.Enable {
+		globalCfg.RedisCfg.BaseCfg.UnixSockFile = beego.AppConfig.DefaultString("redis_exporter.unix_sock",
+			"/dev/shm/redis_exporter.sock")
+		globalCfg.RedisCfg.BaseCfg.MetricsPath = beego.AppConfig.DefaultString("redis_exporter.metrics_path",
+			"/metrics")
+		globalCfg.RedisCfg.BaseCfg.MetricsRouter = beego.AppConfig.DefaultString("redis_exporter.metrics_router",
+			"/redis")
+		globalCfg.RedisCfg.BaseCfg.Timeout = time.Duration(beego.AppConfig.DefaultInt("redis_exporter.timeout",
+			5)) * time.Second
+		filters := strings.Split(beego.AppConfig.DefaultString("redis_exporter.filters", ""),
+			",")
+		var m map[string]string
+		m = make(map[string]string)
+		for _, s := range filters {
+			if len(s) == 0 {
+				continue
+			}
+			m[s] = s
+		}
+		globalCfg.RedisCfg.BaseCfg.Filters = m
+	}
 }
 
 func NodeConfig() Node {
 	return globalCfg.NodeCfg
+}
+
+func RedisConfig() Redis {
+	return globalCfg.RedisCfg
 }
