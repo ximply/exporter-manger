@@ -68,17 +68,17 @@ func Init() {
 	}
 
 	// php-fpm exporter
-	globalCfg.PhpfpmCfg.BaseCfg.Enable = beego.AppConfig.DefaultBool("php-fpm _exporter", false)
+	globalCfg.PhpfpmCfg.BaseCfg.Enable = beego.AppConfig.DefaultBool("phpfpm_exporter", false)
 	if PhpfpmConfig().BaseCfg.Enable {
-		globalCfg.PhpfpmCfg.BaseCfg.UnixSockFile = beego.AppConfig.DefaultString("php-fpm_exporter.unix_sock",
+		globalCfg.PhpfpmCfg.BaseCfg.UnixSockFile = beego.AppConfig.DefaultString("phpfpm_exporter.unix_sock",
 			"/dev/shm/php-fpm_exporter.sock")
-		globalCfg.PhpfpmCfg.BaseCfg.MetricsPath = beego.AppConfig.DefaultString("php-fpm_exporter.metrics_path",
+		globalCfg.PhpfpmCfg.BaseCfg.MetricsPath = beego.AppConfig.DefaultString("phpfpm_exporter.metrics_path",
 			"/metrics")
-		globalCfg.PhpfpmCfg.BaseCfg.MetricsRouter = beego.AppConfig.DefaultString("php-fpm_exporter.metrics_router",
-			"/php-fpm")
-		globalCfg.PhpfpmCfg.BaseCfg.Timeout = time.Duration(beego.AppConfig.DefaultInt("php-fpm_exporter.timeout",
+		globalCfg.PhpfpmCfg.BaseCfg.MetricsRouter = beego.AppConfig.DefaultString("phpfpm_exporter.metrics_router",
+			"/phpfpm")
+		globalCfg.PhpfpmCfg.BaseCfg.Timeout = time.Duration(beego.AppConfig.DefaultInt("phpfpm_exporter.timeout",
 			5)) * time.Second
-		filters := strings.Split(beego.AppConfig.DefaultString("php-fpm_exporter.filters", ""),
+		filters := strings.Split(beego.AppConfig.DefaultString("phpfpm_exporter.filters", ""),
 			",")
 		var m map[string]string
 		m = make(map[string]string)
