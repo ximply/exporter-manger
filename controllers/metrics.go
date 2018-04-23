@@ -16,13 +16,23 @@ func (c *NodeController) NodeMetrics() {
 	c.Ctx.Output.Body([]byte(r))
 }
 
-// node exporter
+// nginx exporter
 type NginxController struct {
 	beego.Controller
 }
 
 func (c *NginxController) NginxMetrics() {
 	r := models.NginxMetrics()
+	c.Ctx.Output.Body([]byte(r))
+}
+
+// nginx vts exporter
+type NginxVtsController struct {
+	beego.Controller
+}
+
+func (c *NginxVtsController) NginxVtsMetrics() {
+	r := models.NginxVtsMetrics()
 	c.Ctx.Output.Body([]byte(r))
 }
 

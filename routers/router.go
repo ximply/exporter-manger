@@ -19,6 +19,11 @@ func init() {
 		beego.Router(config.NginxConfig().BaseCfg.MetricsRouter,
 			&controllers.NginxController{}, "get:NginxMetrics")
 	}
+	// nginx vts exporter
+	if config.NginxVtsConfig().BaseCfg.Enable {
+		beego.Router(config.NginxVtsConfig().BaseCfg.MetricsRouter,
+			&controllers.NginxVtsController{}, "get:NginxVtsMetrics")
+	}
 	// php-fpm exporter
 	if config.PhpfpmConfig().BaseCfg.Enable {
 		beego.Router(config.PhpfpmConfig().BaseCfg.MetricsRouter,

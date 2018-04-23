@@ -9,6 +9,7 @@ import (
 type GlobalConfig struct {
 	NodeCfg Node
 	NginxCfg Nginx
+	NginxVtsCfg NginxVts
 	PhpfpmCfg Phpfpm
 	RedisCfg Redis
 	MemcachedCfg Memcached
@@ -28,6 +29,10 @@ type Node struct {
 }
 
 type Nginx struct {
+	BaseCfg BaseConfig
+}
+
+type NginxVts struct {
 	BaseCfg BaseConfig
 }
 
@@ -95,6 +100,32 @@ func Init() {
 				m[s] = s
 			}
 			globalCfg.NginxCfg.BaseCfg.Filters = m
+		}
+	}
+
+	// nginx vts exporter
+	globalCfg.NginxVtsCfg.BaseCfg.Enable = beego.AppConfig.DefaultBool("nginxvts_exporter", false)
+	if NginxVtsConfig().BaseCfg.Enable {
+		globalCfg.NginxVtsCfg.BaseCfg.UnixSockFile = beego.AppConfig.DefaultString("nginxvts_exporter.unix_sock",
+			"/dev/shm/nginxvts_exporter.sock")
+		globalCfg.NginxVtsCfg.BaseCfg.MetricsPath = beego.AppConfig.DefaultString("nginxvts_exporter.metrics_path",
+			"/metrics")
+		globalCfg.NginxVtsCfg.BaseCfg.MetricsRouter = beego.AppConfig.DefaultString("nginxvts_exporter.metrics_router",
+			"/nginxvts")
+		globalCfg.NginxVtsCfg.BaseCfg.Timeout = time.Duration(beego.AppConfig.DefaultInt("nginxvts_exporter.timeout",
+			5)) * time.Second
+		filters := strings.Split(beego.AppConfig.DefaultString("nginxvts_exporter.filters", ""),
+			",")
+		if len(filters) > 0 {
+			var m map[string]string
+			m = make(map[string]string)
+			for _, s := range filters {
+				if len(s) == 0 {
+					continue
+				}
+				m[s] = s
+			}
+			globalCfg.NginxVtsCfg.BaseCfg.Filters = m
 		}
 	}
 
@@ -177,6 +208,10 @@ func NodeConfig() Node {
 
 func NginxConfig() Nginx {
 	return globalCfg.NginxCfg
+}
+
+func NginxVtsConfig() NginxVts {
+	return globalCfg.NginxVtsCfg
 }
 
 func PhpfpmConfig() Phpfpm {

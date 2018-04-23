@@ -103,6 +103,16 @@ func NginxMetrics() string {
 	return overFilters(rsp.Rsp, config.NginxConfig().BaseCfg.Filters)
 }
 
+func NginxVtsMetrics() string {
+	rsp := metricsFromUnixSock(config.NginxVtsConfig().BaseCfg.UnixSockFile,
+		config.NginxVtsConfig().BaseCfg.MetricsPath)
+	if strings.Compare(rsp.Status, "200") != 0 {
+		return ""
+	}
+
+	return overFilters(rsp.Rsp, config.NginxVtsConfig().BaseCfg.Filters)
+}
+
 func PhpfpmMetrics() string {
 	rsp := metricsFromUnixSock(config.PhpfpmConfig().BaseCfg.UnixSockFile,
 		config.PhpfpmConfig().BaseCfg.MetricsPath)
