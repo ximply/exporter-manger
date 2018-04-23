@@ -21,7 +21,17 @@ type RedisController struct {
 	beego.Controller
 }
 
-func (c *NodeController) RedisMetrics() {
+func (c *RedisController) RedisMetrics() {
 	r := models.RedisMetrics()
+	c.Ctx.Output.Body([]byte(r))
+}
+
+// memcached exporter
+type MemchachedController struct {
+	beego.Controller
+}
+
+func (c *MemchachedController) MemcachedMetrics() {
+	r := models.MemcachedMetrics()
 	c.Ctx.Output.Body([]byte(r))
 }

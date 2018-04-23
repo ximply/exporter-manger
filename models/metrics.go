@@ -102,3 +102,13 @@ func RedisMetrics() string {
 
 	return overFilters(rsp.Rsp, config.RedisConfig().BaseCfg.Filters)
 }
+
+func MemcachedMetrics() string {
+	rsp := metricsFromUnixSock(config.MemcachedConfig().BaseCfg.UnixSockFile,
+		config.MemcachedConfig().BaseCfg.MetricsPath)
+	if strings.Compare(rsp.Status, "200") != 0 {
+		return ""
+	}
+
+	return overFilters(rsp.Rsp, config.MemcachedConfig().BaseCfg.Filters)
+}

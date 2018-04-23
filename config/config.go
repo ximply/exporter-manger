@@ -9,6 +9,7 @@ import (
 type GlobalConfig struct {
 	NodeCfg Node
 	RedisCfg Redis
+	MemcachedCfg Memcached
 }
 
 type BaseConfig struct {
@@ -25,6 +26,10 @@ type Node struct {
 }
 
 type Redis struct {
+	BaseCfg BaseConfig
+}
+
+type Memcached struct {
 	BaseCfg BaseConfig
 }
 
@@ -80,6 +85,30 @@ func Init() {
 		}
 		globalCfg.RedisCfg.BaseCfg.Filters = m
 	}
+
+	// memcached exporter
+	globalCfg.MemcachedCfg.BaseCfg.Enable = beego.AppConfig.DefaultBool("memcached_exporter", false)
+	if MemcachedConfig().BaseCfg.Enable {
+		globalCfg.MemcachedCfg.BaseCfg.UnixSockFile = beego.AppConfig.DefaultString("memcached_exporter.unix_sock",
+			"/dev/shm/memcached_exporter.sock")
+		globalCfg.MemcachedCfg.BaseCfg.MetricsPath = beego.AppConfig.DefaultString("memcached_exporter.metrics_path",
+			"/metrics")
+		globalCfg.MemcachedCfg.BaseCfg.MetricsRouter = beego.AppConfig.DefaultString("memcached_exporter.metrics_router",
+			"/memcached")
+		globalCfg.MemcachedCfg.BaseCfg.Timeout = time.Duration(beego.AppConfig.DefaultInt("memcached_exporter.timeout",
+			5)) * time.Second
+		filters := strings.Split(beego.AppConfig.DefaultString("memcached_exporter.filters", ""),
+			",")
+		var m map[string]string
+		m = make(map[string]string)
+		for _, s := range filters {
+			if len(s) == 0 {
+				continue
+			}
+			m[s] = s
+		}
+		globalCfg.MemcachedCfg.BaseCfg.Filters = m
+	}
 }
 
 func NodeConfig() Node {
@@ -88,4 +117,8 @@ func NodeConfig() Node {
 
 func RedisConfig() Redis {
 	return globalCfg.RedisCfg
+}
+
+func MemcachedConfig() Memcached {
+	return globalCfg.MemcachedCfg
 }
