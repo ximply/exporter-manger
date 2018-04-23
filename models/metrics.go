@@ -84,13 +84,13 @@ func metricsFromUnixSock(unixSockFile string, metricsPath string) UnixResponse {
 }
 
 func PhpfpmMetrics() string {
-	rsp := metricsFromUnixSock(config.NodeConfig().BaseCfg.UnixSockFile,
-		config.NodeConfig().BaseCfg.MetricsPath)
+	rsp := metricsFromUnixSock(config.PhpfpmConfig().BaseCfg.UnixSockFile,
+		config.PhpfpmConfig().BaseCfg.MetricsPath)
 	if strings.Compare(rsp.Status, "200") != 0 {
 		return ""
 	}
 
-	return overFilters(rsp.Rsp, config.NodeConfig().BaseCfg.Filters)
+	return overFilters(rsp.Rsp, config.PhpfpmConfig().BaseCfg.Filters)
 }
 
 func NodeMetrics() string {

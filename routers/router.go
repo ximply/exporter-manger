@@ -14,6 +14,11 @@ func init() {
 		beego.Router(config.NodeConfig().BaseCfg.MetricsRouter,
 			&controllers.NodeController{}, "get:NodeMetrics")
 	}
+	// php-fpm exporter
+	if config.PhpfpmConfig().BaseCfg.Enable {
+		beego.Router(config.PhpfpmConfig().BaseCfg.MetricsRouter,
+			&controllers.PhpfpmController{}, "get:PhpfpmMetrics")
+	}
 	// redis exporter
 	if config.RedisConfig().BaseCfg.Enable {
 		beego.Router(config.RedisConfig().BaseCfg.MetricsRouter,
