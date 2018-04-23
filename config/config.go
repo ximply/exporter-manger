@@ -8,6 +8,7 @@ import (
 
 type GlobalConfig struct {
 	NodeCfg Node
+	PhpfpmCfg Phpfpm
 	RedisCfg Redis
 	MemcachedCfg Memcached
 }
@@ -22,6 +23,10 @@ type BaseConfig struct {
 }
 
 type Node struct {
+	BaseCfg BaseConfig
+}
+
+type Phpfpm struct {
 	BaseCfg BaseConfig
 }
 
@@ -60,6 +65,30 @@ func Init() {
 			}
 			globalCfg.NodeCfg.BaseCfg.Filters = m
 		}
+	}
+
+	// php-fpm exporter
+	globalCfg.PhpfpmCfg.BaseCfg.Enable = beego.AppConfig.DefaultBool("php-fpm _exporter", false)
+	if PhpfpmConfig().BaseCfg.Enable {
+		globalCfg.PhpfpmCfg.BaseCfg.UnixSockFile = beego.AppConfig.DefaultString("php-fpm_exporter.unix_sock",
+			"/dev/shm/php-fpm_exporter.sock")
+		globalCfg.PhpfpmCfg.BaseCfg.MetricsPath = beego.AppConfig.DefaultString("php-fpm_exporter.metrics_path",
+			"/metrics")
+		globalCfg.PhpfpmCfg.BaseCfg.MetricsRouter = beego.AppConfig.DefaultString("php-fpm_exporter.metrics_router",
+			"/php-fpm")
+		globalCfg.PhpfpmCfg.BaseCfg.Timeout = time.Duration(beego.AppConfig.DefaultInt("php-fpm_exporter.timeout",
+			5)) * time.Second
+		filters := strings.Split(beego.AppConfig.DefaultString("php-fpm_exporter.filters", ""),
+			",")
+		var m map[string]string
+		m = make(map[string]string)
+		for _, s := range filters {
+			if len(s) == 0 {
+				continue
+			}
+			m[s] = s
+		}
+		globalCfg.PhpfpmCfg.BaseCfg.Filters = m
 	}
 
 	// redis exporter
@@ -113,6 +142,10 @@ func Init() {
 
 func NodeConfig() Node {
 	return globalCfg.NodeCfg
+}
+
+func PhpfpmConfig() Phpfpm {
+	return globalCfg.PhpfpmCfg
 }
 
 func RedisConfig() Redis {
