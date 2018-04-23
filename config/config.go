@@ -8,6 +8,7 @@ import (
 
 type GlobalConfig struct {
 	NodeCfg Node
+	NginxCfg Nginx
 	PhpfpmCfg Phpfpm
 	RedisCfg Redis
 	MemcachedCfg Memcached
@@ -23,6 +24,10 @@ type BaseConfig struct {
 }
 
 type Node struct {
+	BaseCfg BaseConfig
+}
+
+type Nginx struct {
 	BaseCfg BaseConfig
 }
 
@@ -64,6 +69,32 @@ func Init() {
 				m[s] = s
 			}
 			globalCfg.NodeCfg.BaseCfg.Filters = m
+		}
+	}
+
+	// nginx exporter
+	globalCfg.NginxCfg.BaseCfg.Enable = beego.AppConfig.DefaultBool("nginx_exporter", false)
+	if NginxConfig().BaseCfg.Enable {
+		globalCfg.NginxCfg.BaseCfg.UnixSockFile = beego.AppConfig.DefaultString("nginx_exporter.unix_sock",
+			"/dev/shm/nginx_exporter.sock")
+		globalCfg.NginxCfg.BaseCfg.MetricsPath = beego.AppConfig.DefaultString("nginx_exporter.metrics_path",
+			"/metrics")
+		globalCfg.NginxCfg.BaseCfg.MetricsRouter = beego.AppConfig.DefaultString("nginx_exporter.metrics_router",
+			"/nginx")
+		globalCfg.NginxCfg.BaseCfg.Timeout = time.Duration(beego.AppConfig.DefaultInt("nginx_exporter.timeout",
+			5)) * time.Second
+		filters := strings.Split(beego.AppConfig.DefaultString("nginx_exporter.filters", ""),
+			",")
+		if len(filters) > 0 {
+			var m map[string]string
+			m = make(map[string]string)
+			for _, s := range filters {
+				if len(s) == 0 {
+					continue
+				}
+				m[s] = s
+			}
+			globalCfg.NginxCfg.BaseCfg.Filters = m
 		}
 	}
 
@@ -142,6 +173,10 @@ func Init() {
 
 func NodeConfig() Node {
 	return globalCfg.NodeCfg
+}
+
+func NginxConfig() Nginx {
+	return globalCfg.NginxCfg
 }
 
 func PhpfpmConfig() Phpfpm {

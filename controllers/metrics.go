@@ -16,6 +16,16 @@ func (c *NodeController) NodeMetrics() {
 	c.Ctx.Output.Body([]byte(r))
 }
 
+// node exporter
+type NginxController struct {
+	beego.Controller
+}
+
+func (c *NginxController) NginxMetrics() {
+	r := models.NginxMetrics()
+	c.Ctx.Output.Body([]byte(r))
+}
+
 // php-fpm exporter
 type PhpfpmController struct {
 	beego.Controller

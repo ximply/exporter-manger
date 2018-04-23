@@ -83,16 +83,6 @@ func metricsFromUnixSock(unixSockFile string, metricsPath string) UnixResponse {
 	return rsp
 }
 
-func PhpfpmMetrics() string {
-	rsp := metricsFromUnixSock(config.PhpfpmConfig().BaseCfg.UnixSockFile,
-		config.PhpfpmConfig().BaseCfg.MetricsPath)
-	if strings.Compare(rsp.Status, "200") != 0 {
-		return ""
-	}
-
-	return overFilters(rsp.Rsp, config.PhpfpmConfig().BaseCfg.Filters)
-}
-
 func NodeMetrics() string {
 	rsp := metricsFromUnixSock(config.NodeConfig().BaseCfg.UnixSockFile,
 		config.NodeConfig().BaseCfg.MetricsPath)
@@ -101,6 +91,26 @@ func NodeMetrics() string {
 	}
 
 	return overFilters(rsp.Rsp, config.NodeConfig().BaseCfg.Filters)
+}
+
+func NginxMetrics() string {
+	rsp := metricsFromUnixSock(config.NginxConfig().BaseCfg.UnixSockFile,
+		config.NginxConfig().BaseCfg.MetricsPath)
+	if strings.Compare(rsp.Status, "200") != 0 {
+		return ""
+	}
+
+	return overFilters(rsp.Rsp, config.NginxConfig().BaseCfg.Filters)
+}
+
+func PhpfpmMetrics() string {
+	rsp := metricsFromUnixSock(config.PhpfpmConfig().BaseCfg.UnixSockFile,
+		config.PhpfpmConfig().BaseCfg.MetricsPath)
+	if strings.Compare(rsp.Status, "200") != 0 {
+		return ""
+	}
+
+	return overFilters(rsp.Rsp, config.PhpfpmConfig().BaseCfg.Filters)
 }
 
 func RedisMetrics() string {
