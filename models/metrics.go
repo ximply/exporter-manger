@@ -172,3 +172,13 @@ func GearmanMetrics() string {
 
 	return overFilters(rsp.Rsp, config.GearmanConfig().BaseCfg.Filters)
 }
+
+func MongodbMetrics() string {
+	rsp := metricsFromUnixSock(config.MongodbConfig().BaseCfg.UnixSockFile,
+		config.MongodbConfig().BaseCfg.MetricsPath)
+	if strings.Compare(rsp.Status, "200") != 0 {
+		return ""
+	}
+
+	return overFilters(rsp.Rsp, config.MongodbConfig().BaseCfg.Filters)
+}

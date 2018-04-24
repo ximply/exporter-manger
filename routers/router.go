@@ -54,4 +54,9 @@ func init() {
 		beego.Router(config.GearmanConfig().BaseCfg.MetricsRouter,
 			&controllers.GearmanController{}, "get:GearmanMetrics")
 	}
+	// mongodb exporter
+	if config.MongodbConfig().BaseCfg.Enable {
+		beego.Router(config.MongodbConfig().BaseCfg.MetricsRouter,
+			&controllers.MongodbController{}, "get:MongodbMetrics")
+	}
 }

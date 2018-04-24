@@ -16,6 +16,7 @@ type GlobalConfig struct {
 	MysqlCfg Mysql
 	HaproxyCfg Haproxy
 	GearmanCfg Gearman
+	MongodbCfg Mongodb
 }
 
 type BaseConfig struct {
@@ -60,6 +61,10 @@ type Haproxy struct {
 }
 
 type Gearman struct {
+	BaseCfg BaseConfig
+}
+
+type Mongodb struct {
 	BaseCfg BaseConfig
 }
 
@@ -287,6 +292,30 @@ func Init() {
 		}
 		globalCfg.GearmanCfg.BaseCfg.Filters = m
 	}
+
+	// mongodb exporter
+	globalCfg.MongodbCfg.BaseCfg.Enable = beego.AppConfig.DefaultBool("mongodb_exporter", false)
+	if MongodbConfig().BaseCfg.Enable {
+		globalCfg.MongodbCfg.BaseCfg.UnixSockFile = beego.AppConfig.DefaultString("mongodb_exporter.unix_sock",
+			"/dev/shm/mongodb_exporter.sock")
+		globalCfg.MongodbCfg.BaseCfg.MetricsPath = beego.AppConfig.DefaultString("mongodb_exporter.metrics_path",
+			"/metrics")
+		globalCfg.MongodbCfg.BaseCfg.MetricsRouter = beego.AppConfig.DefaultString("mongodb_exporter.metrics_router",
+			"/mongodb")
+		globalCfg.MongodbCfg.BaseCfg.Timeout = time.Duration(beego.AppConfig.DefaultInt("mongodb_exporter.timeout",
+			5)) * time.Second
+		filters := strings.Split(beego.AppConfig.DefaultString("mongodb_exporter.filters", ""),
+			",")
+		var m map[string]string
+		m = make(map[string]string)
+		for _, s := range filters {
+			if len(s) == 0 {
+				continue
+			}
+			m[s] = s
+		}
+		globalCfg.MongodbCfg.BaseCfg.Filters = m
+	}
 }
 
 func NodeConfig() Node {
@@ -323,4 +352,8 @@ func HaproxyConfig() Haproxy {
 
 func GearmanConfig() Gearman {
 	return globalCfg.GearmanCfg
+}
+
+func MongodbConfig() Mongodb {
+	return globalCfg.MongodbCfg
 }

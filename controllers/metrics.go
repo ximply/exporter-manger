@@ -95,3 +95,13 @@ func (c *GearmanController) GearmanMetrics() {
 	r := models.GearmanMetrics()
 	c.Ctx.Output.Body([]byte(r))
 }
+
+// mongodb exporter
+type MongodbController struct {
+	beego.Controller
+}
+
+func (c *MongodbController) MongodbMetrics() {
+	r := models.MongodbMetrics()
+	c.Ctx.Output.Body([]byte(r))
+}
