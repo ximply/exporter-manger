@@ -39,4 +39,9 @@ func init() {
 		beego.Router(config.MemcachedConfig().BaseCfg.MetricsRouter,
 			&controllers.MemchachedController{}, "get:MemcachedMetrics")
 	}
+	// mysqld exporter
+	if config.MysqlConfig().BaseCfg.Enable {
+		beego.Router(config.MysqlConfig().BaseCfg.MetricsRouter,
+			&controllers.MysqldController{}, "get:MysqldMetrics")
+	}
 }

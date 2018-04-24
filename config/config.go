@@ -13,6 +13,7 @@ type GlobalConfig struct {
 	PhpfpmCfg Phpfpm
 	RedisCfg Redis
 	MemcachedCfg Memcached
+	MysqlCfg Mysql
 }
 
 type BaseConfig struct {
@@ -45,6 +46,10 @@ type Redis struct {
 }
 
 type Memcached struct {
+	BaseCfg BaseConfig
+}
+
+type Mysql struct {
 	BaseCfg BaseConfig
 }
 
@@ -200,6 +205,30 @@ func Init() {
 		}
 		globalCfg.MemcachedCfg.BaseCfg.Filters = m
 	}
+
+	// mysqld exporter
+	globalCfg.MysqlCfg.BaseCfg.Enable = beego.AppConfig.DefaultBool("mysqld_exporter", false)
+	if MysqlConfig().BaseCfg.Enable {
+		globalCfg.MysqlCfg.BaseCfg.UnixSockFile = beego.AppConfig.DefaultString("mysqld_exporter.unix_sock",
+			"/dev/shm/mysqld_exporter.sock")
+		globalCfg.MysqlCfg.BaseCfg.MetricsPath = beego.AppConfig.DefaultString("mysqld_exporter.metrics_path",
+			"/metrics")
+		globalCfg.MysqlCfg.BaseCfg.MetricsRouter = beego.AppConfig.DefaultString("mysqld_exporter.metrics_router",
+			"/mysql")
+		globalCfg.MysqlCfg.BaseCfg.Timeout = time.Duration(beego.AppConfig.DefaultInt("mysqld_exporter.timeout",
+			5)) * time.Second
+		filters := strings.Split(beego.AppConfig.DefaultString("mysqld_exporter.filters", ""),
+			",")
+		var m map[string]string
+		m = make(map[string]string)
+		for _, s := range filters {
+			if len(s) == 0 {
+				continue
+			}
+			m[s] = s
+		}
+		globalCfg.MysqlCfg.BaseCfg.Filters = m
+	}
 }
 
 func NodeConfig() Node {
@@ -224,4 +253,8 @@ func RedisConfig() Redis {
 
 func MemcachedConfig() Memcached {
 	return globalCfg.MemcachedCfg
+}
+
+func MysqlConfig() Mysql {
+	return globalCfg.MysqlCfg
 }

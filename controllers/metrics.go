@@ -65,3 +65,13 @@ func (c *MemchachedController) MemcachedMetrics() {
 	r := models.MemcachedMetrics()
 	c.Ctx.Output.Body([]byte(r))
 }
+
+// mysqld exporter
+type MysqldController struct {
+	beego.Controller
+}
+
+func (c *MysqldController) MysqldMetrics() {
+	r := models.MysqldMetrics()
+	c.Ctx.Output.Body([]byte(r))
+}

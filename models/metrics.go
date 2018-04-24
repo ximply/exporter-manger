@@ -142,3 +142,13 @@ func MemcachedMetrics() string {
 
 	return overFilters(rsp.Rsp, config.MemcachedConfig().BaseCfg.Filters)
 }
+
+func MysqldMetrics() string {
+	rsp := metricsFromUnixSock(config.MysqlConfig().BaseCfg.UnixSockFile,
+		config.MysqlConfig().BaseCfg.MetricsPath)
+	if strings.Compare(rsp.Status, "200") != 0 {
+		return ""
+	}
+
+	return overFilters(rsp.Rsp, config.MysqlConfig().BaseCfg.Filters)
+}
