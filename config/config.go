@@ -15,6 +15,7 @@ type GlobalConfig struct {
 	MemcachedCfg Memcached
 	MysqlCfg Mysql
 	HaproxyCfg Haproxy
+	GearmanCfg Gearman
 }
 
 type BaseConfig struct {
@@ -55,6 +56,10 @@ type Mysql struct {
 }
 
 type Haproxy struct {
+	BaseCfg BaseConfig
+}
+
+type Gearman struct {
 	BaseCfg BaseConfig
 }
 
@@ -258,6 +263,30 @@ func Init() {
 		}
 		globalCfg.HaproxyCfg.BaseCfg.Filters = m
 	}
+
+	// gearman exporter
+	globalCfg.GearmanCfg.BaseCfg.Enable = beego.AppConfig.DefaultBool("gearman_exporter", false)
+	if GearmanConfig().BaseCfg.Enable {
+		globalCfg.GearmanCfg.BaseCfg.UnixSockFile = beego.AppConfig.DefaultString("gearman_exporter.unix_sock",
+			"/dev/shm/gearman_exporter.sock")
+		globalCfg.GearmanCfg.BaseCfg.MetricsPath = beego.AppConfig.DefaultString("gearman_exporter.metrics_path",
+			"/metrics")
+		globalCfg.GearmanCfg.BaseCfg.MetricsRouter = beego.AppConfig.DefaultString("gearman_exporter.metrics_router",
+			"/gearman")
+		globalCfg.GearmanCfg.BaseCfg.Timeout = time.Duration(beego.AppConfig.DefaultInt("gearman_exporter.timeout",
+			5)) * time.Second
+		filters := strings.Split(beego.AppConfig.DefaultString("gearman_exporter.filters", ""),
+			",")
+		var m map[string]string
+		m = make(map[string]string)
+		for _, s := range filters {
+			if len(s) == 0 {
+				continue
+			}
+			m[s] = s
+		}
+		globalCfg.GearmanCfg.BaseCfg.Filters = m
+	}
 }
 
 func NodeConfig() Node {
@@ -290,4 +319,8 @@ func MysqlConfig() Mysql {
 
 func HaproxyConfig() Haproxy {
 	return globalCfg.HaproxyCfg
+}
+
+func GearmanConfig() Gearman {
+	return globalCfg.GearmanCfg
 }

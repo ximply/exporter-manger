@@ -85,3 +85,13 @@ func (c *HaproxyController) HaproxyMetrics() {
 	r := models.HaproxyMetrics()
 	c.Ctx.Output.Body([]byte(r))
 }
+
+// gearman exporter
+type GearmanController struct {
+	beego.Controller
+}
+
+func (c *GearmanController) GearmanMetrics() {
+	r := models.GearmanMetrics()
+	c.Ctx.Output.Body([]byte(r))
+}

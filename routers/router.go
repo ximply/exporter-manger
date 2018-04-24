@@ -49,4 +49,9 @@ func init() {
 		beego.Router(config.HaproxyConfig().BaseCfg.MetricsRouter,
 			&controllers.HaproxyController{}, "get:HaproxyMetrics")
 	}
+	// gearman exporter
+	if config.GearmanConfig().BaseCfg.Enable {
+		beego.Router(config.GearmanConfig().BaseCfg.MetricsRouter,
+			&controllers.GearmanController{}, "get:GearmanMetrics")
+	}
 }

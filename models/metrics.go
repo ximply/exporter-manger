@@ -162,3 +162,13 @@ func HaproxyMetrics() string {
 
 	return overFilters(rsp.Rsp, config.HaproxyConfig().BaseCfg.Filters)
 }
+
+func GearmanMetrics() string {
+	rsp := metricsFromUnixSock(config.GearmanConfig().BaseCfg.UnixSockFile,
+		config.GearmanConfig().BaseCfg.MetricsPath)
+	if strings.Compare(rsp.Status, "200") != 0 {
+		return ""
+	}
+
+	return overFilters(rsp.Rsp, config.GearmanConfig().BaseCfg.Filters)
+}
