@@ -152,3 +152,13 @@ func MysqldMetrics() string {
 
 	return overFilters(rsp.Rsp, config.MysqlConfig().BaseCfg.Filters)
 }
+
+func HaproxyMetrics() string {
+	rsp := metricsFromUnixSock(config.HaproxyConfig().BaseCfg.UnixSockFile,
+		config.HaproxyConfig().BaseCfg.MetricsPath)
+	if strings.Compare(rsp.Status, "200") != 0 {
+		return ""
+	}
+
+	return overFilters(rsp.Rsp, config.HaproxyConfig().BaseCfg.Filters)
+}

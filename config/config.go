@@ -14,6 +14,7 @@ type GlobalConfig struct {
 	RedisCfg Redis
 	MemcachedCfg Memcached
 	MysqlCfg Mysql
+	HaproxyCfg Haproxy
 }
 
 type BaseConfig struct {
@@ -50,6 +51,10 @@ type Memcached struct {
 }
 
 type Mysql struct {
+	BaseCfg BaseConfig
+}
+
+type Haproxy struct {
 	BaseCfg BaseConfig
 }
 
@@ -229,6 +234,30 @@ func Init() {
 		}
 		globalCfg.MysqlCfg.BaseCfg.Filters = m
 	}
+
+	// haproxy exporter
+	globalCfg.HaproxyCfg.BaseCfg.Enable = beego.AppConfig.DefaultBool("haproxy_exporter", false)
+	if HaproxyConfig().BaseCfg.Enable {
+		globalCfg.HaproxyCfg.BaseCfg.UnixSockFile = beego.AppConfig.DefaultString("haproxy_exporter.unix_sock",
+			"/dev/shm/haproxy_exporter.sock")
+		globalCfg.HaproxyCfg.BaseCfg.MetricsPath = beego.AppConfig.DefaultString("haproxy_exporter.metrics_path",
+			"/metrics")
+		globalCfg.HaproxyCfg.BaseCfg.MetricsRouter = beego.AppConfig.DefaultString("haproxy_exporter.metrics_router",
+			"/haproxy")
+		globalCfg.HaproxyCfg.BaseCfg.Timeout = time.Duration(beego.AppConfig.DefaultInt("haproxy_exporter.timeout",
+			5)) * time.Second
+		filters := strings.Split(beego.AppConfig.DefaultString("haproxy_exporter.filters", ""),
+			",")
+		var m map[string]string
+		m = make(map[string]string)
+		for _, s := range filters {
+			if len(s) == 0 {
+				continue
+			}
+			m[s] = s
+		}
+		globalCfg.HaproxyCfg.BaseCfg.Filters = m
+	}
 }
 
 func NodeConfig() Node {
@@ -257,4 +286,8 @@ func MemcachedConfig() Memcached {
 
 func MysqlConfig() Mysql {
 	return globalCfg.MysqlCfg
+}
+
+func HaproxyConfig() Haproxy {
+	return globalCfg.HaproxyCfg
 }

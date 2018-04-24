@@ -44,4 +44,9 @@ func init() {
 		beego.Router(config.MysqlConfig().BaseCfg.MetricsRouter,
 			&controllers.MysqldController{}, "get:MysqldMetrics")
 	}
+	// haproxy exporter
+	if config.HaproxyConfig().BaseCfg.Enable {
+		beego.Router(config.HaproxyConfig().BaseCfg.MetricsRouter,
+			&controllers.HaproxyController{}, "get:HaproxyMetrics")
+	}
 }
