@@ -105,3 +105,13 @@ func (c *MongodbController) MongodbMetrics() {
 	r := models.MongodbMetrics()
 	c.Ctx.Output.Body([]byte(r))
 }
+
+// dellhardware exporter
+type DellHardwareController struct {
+	beego.Controller
+}
+
+func (c *DellHardwareController) DellHardwareMetrics() {
+	r := models.DellHardwareMetrics()
+	c.Ctx.Output.Body([]byte(r))
+}

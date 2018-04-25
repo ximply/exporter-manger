@@ -182,3 +182,13 @@ func MongodbMetrics() string {
 
 	return overFilters(rsp.Rsp, config.MongodbConfig().BaseCfg.Filters)
 }
+
+func DellHardwareMetrics() string {
+	rsp := metricsFromUnixSock(config.DellHardwareConfig().BaseCfg.UnixSockFile,
+		config.DellHardwareConfig().BaseCfg.MetricsPath)
+	if strings.Compare(rsp.Status, "200") != 0 {
+		return ""
+	}
+
+	return overFilters(rsp.Rsp, config.DellHardwareConfig().BaseCfg.Filters)
+}

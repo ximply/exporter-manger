@@ -59,4 +59,9 @@ func init() {
 		beego.Router(config.MongodbConfig().BaseCfg.MetricsRouter,
 			&controllers.MongodbController{}, "get:MongodbMetrics")
 	}
+	// dellhardware exporter
+	if config.DellHardwareConfig().BaseCfg.Enable {
+		beego.Router(config.DellHardwareConfig().BaseCfg.MetricsRouter,
+			&controllers.DellHardwareController{}, "get:DellHardwareMetrics")
+	}
 }

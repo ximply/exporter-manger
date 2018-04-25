@@ -17,6 +17,7 @@ type GlobalConfig struct {
 	HaproxyCfg Haproxy
 	GearmanCfg Gearman
 	MongodbCfg Mongodb
+	DellHardwareCfg DellHardware
 }
 
 type BaseConfig struct {
@@ -65,6 +66,10 @@ type Gearman struct {
 }
 
 type Mongodb struct {
+	BaseCfg BaseConfig
+}
+
+type DellHardware struct {
 	BaseCfg BaseConfig
 }
 
@@ -316,6 +321,30 @@ func Init() {
 		}
 		globalCfg.MongodbCfg.BaseCfg.Filters = m
 	}
+
+	// dell hardware exporter
+	globalCfg.DellHardwareCfg.BaseCfg.Enable = beego.AppConfig.DefaultBool("dellhardware_exporter", false)
+	if DellHardwareConfig().BaseCfg.Enable {
+		globalCfg.DellHardwareCfg.BaseCfg.UnixSockFile = beego.AppConfig.DefaultString("dellhardware_exporter.unix_sock",
+			"/dev/shm/dellhardware_exporter.sock")
+		globalCfg.DellHardwareCfg.BaseCfg.MetricsPath = beego.AppConfig.DefaultString("dellhardware_exporter.metrics_path",
+			"/metrics")
+		globalCfg.DellHardwareCfg.BaseCfg.MetricsRouter = beego.AppConfig.DefaultString("dellhardware_exporter.metrics_router",
+			"/dellhw")
+		globalCfg.DellHardwareCfg.BaseCfg.Timeout = time.Duration(beego.AppConfig.DefaultInt("dellhardware_exporter.timeout",
+			5)) * time.Second
+		filters := strings.Split(beego.AppConfig.DefaultString("dellhardware_exporter.filters", ""),
+			",")
+		var m map[string]string
+		m = make(map[string]string)
+		for _, s := range filters {
+			if len(s) == 0 {
+				continue
+			}
+			m[s] = s
+		}
+		globalCfg.DellHardwareCfg.BaseCfg.Filters = m
+	}
 }
 
 func NodeConfig() Node {
@@ -356,4 +385,8 @@ func GearmanConfig() Gearman {
 
 func MongodbConfig() Mongodb {
 	return globalCfg.MongodbCfg
+}
+
+func DellHardwareConfig() DellHardware {
+	return globalCfg.DellHardwareCfg
 }
