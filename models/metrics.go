@@ -44,7 +44,6 @@ func overFilters(src string, filters map[string]string) string {
 		if strings.Contains(tmp, "{") {
 			metric = utils.Substr(tmp, 0, strings.Index(tmp, "{"))
 		}
-		fmt.Println(metric)
 		if existsMetric(metric, filters) {
 			ret += s
 			ret += "\n"
