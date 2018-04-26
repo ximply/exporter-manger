@@ -115,3 +115,13 @@ func (c *DellHardwareController) DellHardwareMetrics() {
 	r := models.DellHardwareMetrics()
 	c.Ctx.Output.Body([]byte(r))
 }
+
+// xenserver exporter
+type XenserverController struct {
+	beego.Controller
+}
+
+func (c *XenserverController) XenserverMetrics() {
+	r := models.XenserverMetrics()
+	c.Ctx.Output.Body([]byte(r))
+}

@@ -191,3 +191,13 @@ func DellHardwareMetrics() string {
 
 	return overFilters(rsp.Rsp, config.DellHardwareConfig().BaseCfg.Filters)
 }
+
+func XenserverMetrics() string {
+	rsp := metricsFromUnixSock(config.XenserverConfig().BaseCfg.UnixSockFile,
+		config.XenserverConfig().BaseCfg.MetricsPath)
+	if strings.Compare(rsp.Status, "200") != 0 {
+		return ""
+	}
+
+	return overFilters(rsp.Rsp, config.XenserverConfig().BaseCfg.Filters)
+}

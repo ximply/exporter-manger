@@ -18,6 +18,7 @@ type GlobalConfig struct {
 	GearmanCfg Gearman
 	MongodbCfg Mongodb
 	DellHardwareCfg DellHardware
+	XenserverCfg Xenserver
 }
 
 type BaseConfig struct {
@@ -70,6 +71,10 @@ type Mongodb struct {
 }
 
 type DellHardware struct {
+	BaseCfg BaseConfig
+}
+
+type Xenserver struct {
 	BaseCfg BaseConfig
 }
 
@@ -345,6 +350,30 @@ func Init() {
 		}
 		globalCfg.DellHardwareCfg.BaseCfg.Filters = m
 	}
+
+	// xenserver exporter
+	globalCfg.DellHardwareCfg.BaseCfg.Enable = beego.AppConfig.DefaultBool("xenserver_exporter", false)
+	if XenserverConfig().BaseCfg.Enable {
+		globalCfg.XenserverCfg.BaseCfg.UnixSockFile = beego.AppConfig.DefaultString("xenserver_exporter.unix_sock",
+			"/dev/shm/xenserver_exporter.sock")
+		globalCfg.XenserverCfg.BaseCfg.MetricsPath = beego.AppConfig.DefaultString("xenserver_exporter.metrics_path",
+			"/metrics")
+		globalCfg.XenserverCfg.BaseCfg.MetricsRouter = beego.AppConfig.DefaultString("xenserver_exporter.metrics_router",
+			"/xenserver")
+		globalCfg.XenserverCfg.BaseCfg.Timeout = time.Duration(beego.AppConfig.DefaultInt("xenserver_exporter.timeout",
+			5)) * time.Second
+		filters := strings.Split(beego.AppConfig.DefaultString("xenserver_exporter.filters", ""),
+			",")
+		var m map[string]string
+		m = make(map[string]string)
+		for _, s := range filters {
+			if len(s) == 0 {
+				continue
+			}
+			m[s] = s
+		}
+		globalCfg.XenserverCfg.BaseCfg.Filters = m
+	}
 }
 
 func NodeConfig() Node {
@@ -389,4 +418,8 @@ func MongodbConfig() Mongodb {
 
 func DellHardwareConfig() DellHardware {
 	return globalCfg.DellHardwareCfg
+}
+
+func XenserverConfig() Xenserver {
+	return globalCfg.XenserverCfg
 }

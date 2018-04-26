@@ -64,4 +64,10 @@ func init() {
 		beego.Router(config.DellHardwareConfig().BaseCfg.MetricsRouter,
 			&controllers.DellHardwareController{}, "get:DellHardwareMetrics")
 	}
+
+	// xenserver exporter
+	if config.XenserverConfig().BaseCfg.Enable {
+		beego.Router(config.XenserverConfig().BaseCfg.MetricsRouter,
+			&controllers.XenserverController{}, "get:XenserverMetrics")
+	}
 }
