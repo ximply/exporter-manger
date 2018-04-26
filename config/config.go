@@ -352,7 +352,7 @@ func Init() {
 	}
 
 	// xenserver exporter
-	globalCfg.DellHardwareCfg.BaseCfg.Enable = beego.AppConfig.DefaultBool("xenserver_exporter", false)
+	globalCfg.XenserverCfg.BaseCfg.Enable = beego.AppConfig.DefaultBool("xenserver_exporter", false)
 	if XenserverConfig().BaseCfg.Enable {
 		globalCfg.XenserverCfg.BaseCfg.UnixSockFile = beego.AppConfig.DefaultString("xenserver_exporter.unix_sock",
 			"/dev/shm/xenserver_exporter.sock")

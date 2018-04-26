@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"io/ioutil"
 	"context"
+	"time"
 )
 
 type UnixResponse struct {
@@ -53,7 +54,7 @@ func overFilters(src string, filters map[string]string) string {
 	return ret
 }
 
-func metricsFromUnixSock(unixSockFile string, metricsPath string) UnixResponse {
+func metricsFromUnixSock(unixSockFile string, metricsPath string, timeout time.Duration) UnixResponse {
 	rsp := UnixResponse{
 		Rsp: "",
 		Status: "500",
@@ -64,7 +65,7 @@ func metricsFromUnixSock(unixSockFile string, metricsPath string) UnixResponse {
 				return net.Dial("unix", unixSockFile)
 			},
 		},
-		Timeout: config.NodeConfig().BaseCfg.Timeout,
+		Timeout: timeout,
 	}
 	res, err := c.Get(fmt.Sprintf("http://unix/%s", metricsPath))
 	if err != nil {
@@ -84,7 +85,8 @@ func metricsFromUnixSock(unixSockFile string, metricsPath string) UnixResponse {
 
 func NodeMetrics() string {
 	rsp := metricsFromUnixSock(config.NodeConfig().BaseCfg.UnixSockFile,
-		config.NodeConfig().BaseCfg.MetricsPath)
+		config.NodeConfig().BaseCfg.MetricsPath,
+			config.NodeConfig().BaseCfg.Timeout)
 	if strings.Compare(rsp.Status, "200") != 0 {
 		return ""
 	}
@@ -94,7 +96,8 @@ func NodeMetrics() string {
 
 func NginxMetrics() string {
 	rsp := metricsFromUnixSock(config.NginxConfig().BaseCfg.UnixSockFile,
-		config.NginxConfig().BaseCfg.MetricsPath)
+		config.NginxConfig().BaseCfg.MetricsPath,
+			config.NginxConfig().BaseCfg.Timeout)
 	if strings.Compare(rsp.Status, "200") != 0 {
 		return ""
 	}
@@ -104,7 +107,8 @@ func NginxMetrics() string {
 
 func NginxVtsMetrics() string {
 	rsp := metricsFromUnixSock(config.NginxVtsConfig().BaseCfg.UnixSockFile,
-		config.NginxVtsConfig().BaseCfg.MetricsPath)
+		config.NginxVtsConfig().BaseCfg.MetricsPath,
+			config.NginxVtsConfig().BaseCfg.Timeout)
 	if strings.Compare(rsp.Status, "200") != 0 {
 		return ""
 	}
@@ -114,7 +118,8 @@ func NginxVtsMetrics() string {
 
 func PhpfpmMetrics() string {
 	rsp := metricsFromUnixSock(config.PhpfpmConfig().BaseCfg.UnixSockFile,
-		config.PhpfpmConfig().BaseCfg.MetricsPath)
+		config.PhpfpmConfig().BaseCfg.MetricsPath,
+			config.PhpfpmConfig().BaseCfg.Timeout)
 	if strings.Compare(rsp.Status, "200") != 0 {
 		return ""
 	}
@@ -124,7 +129,8 @@ func PhpfpmMetrics() string {
 
 func RedisMetrics() string {
 	rsp := metricsFromUnixSock(config.RedisConfig().BaseCfg.UnixSockFile,
-		config.RedisConfig().BaseCfg.MetricsPath)
+		config.RedisConfig().BaseCfg.MetricsPath,
+			config.RedisConfig().BaseCfg.Timeout)
 	if strings.Compare(rsp.Status, "200") != 0 {
 		return ""
 	}
@@ -134,7 +140,8 @@ func RedisMetrics() string {
 
 func MemcachedMetrics() string {
 	rsp := metricsFromUnixSock(config.MemcachedConfig().BaseCfg.UnixSockFile,
-		config.MemcachedConfig().BaseCfg.MetricsPath)
+		config.MemcachedConfig().BaseCfg.MetricsPath,
+			config.MemcachedConfig().BaseCfg.Timeout)
 	if strings.Compare(rsp.Status, "200") != 0 {
 		return ""
 	}
@@ -144,7 +151,8 @@ func MemcachedMetrics() string {
 
 func MysqldMetrics() string {
 	rsp := metricsFromUnixSock(config.MysqlConfig().BaseCfg.UnixSockFile,
-		config.MysqlConfig().BaseCfg.MetricsPath)
+		config.MysqlConfig().BaseCfg.MetricsPath,
+			config.MysqlConfig().BaseCfg.Timeout)
 	if strings.Compare(rsp.Status, "200") != 0 {
 		return ""
 	}
@@ -154,7 +162,8 @@ func MysqldMetrics() string {
 
 func HaproxyMetrics() string {
 	rsp := metricsFromUnixSock(config.HaproxyConfig().BaseCfg.UnixSockFile,
-		config.HaproxyConfig().BaseCfg.MetricsPath)
+		config.HaproxyConfig().BaseCfg.MetricsPath,
+			config.HaproxyConfig().BaseCfg.Timeout)
 	if strings.Compare(rsp.Status, "200") != 0 {
 		return ""
 	}
@@ -164,7 +173,8 @@ func HaproxyMetrics() string {
 
 func GearmanMetrics() string {
 	rsp := metricsFromUnixSock(config.GearmanConfig().BaseCfg.UnixSockFile,
-		config.GearmanConfig().BaseCfg.MetricsPath)
+		config.GearmanConfig().BaseCfg.MetricsPath,
+			config.GearmanConfig().BaseCfg.Timeout)
 	if strings.Compare(rsp.Status, "200") != 0 {
 		return ""
 	}
@@ -174,7 +184,8 @@ func GearmanMetrics() string {
 
 func MongodbMetrics() string {
 	rsp := metricsFromUnixSock(config.MongodbConfig().BaseCfg.UnixSockFile,
-		config.MongodbConfig().BaseCfg.MetricsPath)
+		config.MongodbConfig().BaseCfg.MetricsPath,
+			config.MongodbConfig().BaseCfg.Timeout)
 	if strings.Compare(rsp.Status, "200") != 0 {
 		return ""
 	}
@@ -184,7 +195,8 @@ func MongodbMetrics() string {
 
 func DellHardwareMetrics() string {
 	rsp := metricsFromUnixSock(config.DellHardwareConfig().BaseCfg.UnixSockFile,
-		config.DellHardwareConfig().BaseCfg.MetricsPath)
+		config.DellHardwareConfig().BaseCfg.MetricsPath,
+			config.DellHardwareConfig().BaseCfg.Timeout)
 	if strings.Compare(rsp.Status, "200") != 0 {
 		return ""
 	}
@@ -194,7 +206,8 @@ func DellHardwareMetrics() string {
 
 func XenserverMetrics() string {
 	rsp := metricsFromUnixSock(config.XenserverConfig().BaseCfg.UnixSockFile,
-		config.XenserverConfig().BaseCfg.MetricsPath)
+		config.XenserverConfig().BaseCfg.MetricsPath,
+			config.XenserverConfig().BaseCfg.Timeout)
 	if strings.Compare(rsp.Status, "200") != 0 {
 		return ""
 	}
