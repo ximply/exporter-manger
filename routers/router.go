@@ -76,4 +76,10 @@ func init() {
 		beego.Router(config.ElasticsearchConfig().BaseCfg.MetricsRouter,
 			&controllers.ElasticsearchController{}, "get:ElasticsearchMetrics")
 	}
+
+	// logstash exporter
+	if config.LogstashConfig().BaseCfg.Enable {
+		beego.Router(config.LogstashConfig().BaseCfg.MetricsRouter,
+			&controllers.LogstashController{}, "get:LogstashMetrics")
+	}
 }

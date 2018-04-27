@@ -135,3 +135,13 @@ func (c *ElasticsearchController) ElasticsearchMetrics() {
 	r := models.ElasticsearchMetrics()
 	c.Ctx.Output.Body([]byte(r))
 }
+
+// logstash exporter
+type LogstashController struct {
+	beego.Controller
+}
+
+func (c *LogstashController) LogstashMetrics() {
+	r := models.LogstashMetrics()
+	c.Ctx.Output.Body([]byte(r))
+}

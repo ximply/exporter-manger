@@ -20,6 +20,7 @@ type GlobalConfig struct {
 	DellHardwareCfg DellHardware
 	XenserverCfg Xenserver
 	ElasticsearchCfg Elasticsearch
+	LogstashCfg Logstash
 }
 
 type BaseConfig struct {
@@ -80,6 +81,10 @@ type Xenserver struct {
 }
 
 type Elasticsearch struct {
+	BaseCfg BaseConfig
+}
+
+type Logstash struct {
 	BaseCfg BaseConfig
 }
 
@@ -403,6 +408,30 @@ func Init() {
 		}
 		globalCfg.ElasticsearchCfg.BaseCfg.Filters = m
 	}
+
+	// logstash exporter
+	globalCfg.LogstashCfg.BaseCfg.Enable = beego.AppConfig.DefaultBool("logstash_exporter", false)
+	if LogstashConfig().BaseCfg.Enable {
+		globalCfg.LogstashCfg.BaseCfg.UnixSockFile = beego.AppConfig.DefaultString("logstash_exporter.unix_sock",
+			"/dev/shm/logstash_exporter.sock")
+		globalCfg.LogstashCfg.BaseCfg.MetricsPath = beego.AppConfig.DefaultString("logstash_exporter.metrics_path",
+			"/metrics")
+		globalCfg.LogstashCfg.BaseCfg.MetricsRouter = beego.AppConfig.DefaultString("logstash_exporter.metrics_router",
+			"/logstash")
+		globalCfg.LogstashCfg.BaseCfg.Timeout = time.Duration(beego.AppConfig.DefaultInt("logstash_exporter.timeout",
+			5)) * time.Second
+		filters := strings.Split(beego.AppConfig.DefaultString("logstash_exporter.filters", ""),
+			",")
+		var m map[string]string
+		m = make(map[string]string)
+		for _, s := range filters {
+			if len(s) == 0 {
+				continue
+			}
+			m[s] = s
+		}
+		globalCfg.LogstashCfg.BaseCfg.Filters = m
+	}
 }
 
 func NodeConfig() Node {
@@ -455,4 +484,8 @@ func XenserverConfig() Xenserver {
 
 func ElasticsearchConfig() Elasticsearch {
 	return globalCfg.ElasticsearchCfg
+}
+
+func LogstashConfig() Logstash {
+	return globalCfg.LogstashCfg
 }

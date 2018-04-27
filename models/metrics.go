@@ -225,3 +225,14 @@ func ElasticsearchMetrics() string {
 
 	return overFilters(rsp.Rsp, config.ElasticsearchConfig().BaseCfg.Filters)
 }
+
+func LogstashMetrics() string {
+	rsp := metricsFromUnixSock(config.LogstashConfig().BaseCfg.UnixSockFile,
+		config.LogstashConfig().BaseCfg.MetricsPath,
+		config.LogstashConfig().BaseCfg.Timeout)
+	if strings.Compare(rsp.Status, "200") != 0 {
+		return ""
+	}
+
+	return overFilters(rsp.Rsp, config.LogstashConfig().BaseCfg.Filters)
+}
