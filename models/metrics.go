@@ -214,3 +214,14 @@ func XenserverMetrics() string {
 
 	return overFilters(rsp.Rsp, config.XenserverConfig().BaseCfg.Filters)
 }
+
+func ElasticsearchMetrics() string {
+	rsp := metricsFromUnixSock(config.ElasticsearchConfig().BaseCfg.UnixSockFile,
+		config.ElasticsearchConfig().BaseCfg.MetricsPath,
+		config.ElasticsearchConfig().BaseCfg.Timeout)
+	if strings.Compare(rsp.Status, "200") != 0 {
+		return ""
+	}
+
+	return overFilters(rsp.Rsp, config.ElasticsearchConfig().BaseCfg.Filters)
+}

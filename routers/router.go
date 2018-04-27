@@ -70,4 +70,10 @@ func init() {
 		beego.Router(config.XenserverConfig().BaseCfg.MetricsRouter,
 			&controllers.XenserverController{}, "get:XenserverMetrics")
 	}
+
+	// elasticsearch exporter
+	if config.ElasticsearchConfig().BaseCfg.Enable {
+		beego.Router(config.ElasticsearchConfig().BaseCfg.MetricsRouter,
+			&controllers.ElasticsearchController{}, "get:ElasticsearchMetrics")
+	}
 }

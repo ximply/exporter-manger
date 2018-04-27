@@ -125,3 +125,13 @@ func (c *XenserverController) XenserverMetrics() {
 	r := models.XenserverMetrics()
 	c.Ctx.Output.Body([]byte(r))
 }
+
+// elasticsearch exporter
+type ElasticsearchController struct {
+	beego.Controller
+}
+
+func (c *ElasticsearchController) ElasticsearchMetrics() {
+	r := models.ElasticsearchMetrics()
+	c.Ctx.Output.Body([]byte(r))
+}

@@ -19,6 +19,7 @@ type GlobalConfig struct {
 	MongodbCfg Mongodb
 	DellHardwareCfg DellHardware
 	XenserverCfg Xenserver
+	ElasticsearchCfg Elasticsearch
 }
 
 type BaseConfig struct {
@@ -75,6 +76,10 @@ type DellHardware struct {
 }
 
 type Xenserver struct {
+	BaseCfg BaseConfig
+}
+
+type Elasticsearch struct {
 	BaseCfg BaseConfig
 }
 
@@ -374,6 +379,30 @@ func Init() {
 		}
 		globalCfg.XenserverCfg.BaseCfg.Filters = m
 	}
+
+	// elasticsearch exporter
+	globalCfg.ElasticsearchCfg.BaseCfg.Enable = beego.AppConfig.DefaultBool("elasticsearch_exporter", false)
+	if ElasticsearchConfig().BaseCfg.Enable {
+		globalCfg.ElasticsearchCfg.BaseCfg.UnixSockFile = beego.AppConfig.DefaultString("elasticsearch_exporter.unix_sock",
+			"/dev/shm/elasticsearch_exporter.sock")
+		globalCfg.ElasticsearchCfg.BaseCfg.MetricsPath = beego.AppConfig.DefaultString("elasticsearch_exporter.metrics_path",
+			"/metrics")
+		globalCfg.ElasticsearchCfg.BaseCfg.MetricsRouter = beego.AppConfig.DefaultString("elasticsearch_exporter.metrics_router",
+			"/es")
+		globalCfg.ElasticsearchCfg.BaseCfg.Timeout = time.Duration(beego.AppConfig.DefaultInt("elasticsearch_exporter.timeout",
+			5)) * time.Second
+		filters := strings.Split(beego.AppConfig.DefaultString("elasticsearch_exporter.filters", ""),
+			",")
+		var m map[string]string
+		m = make(map[string]string)
+		for _, s := range filters {
+			if len(s) == 0 {
+				continue
+			}
+			m[s] = s
+		}
+		globalCfg.ElasticsearchCfg.BaseCfg.Filters = m
+	}
 }
 
 func NodeConfig() Node {
@@ -422,4 +451,8 @@ func DellHardwareConfig() DellHardware {
 
 func XenserverConfig() Xenserver {
 	return globalCfg.XenserverCfg
+}
+
+func ElasticsearchConfig() Elasticsearch {
+	return globalCfg.ElasticsearchCfg
 }
