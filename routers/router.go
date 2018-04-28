@@ -82,4 +82,10 @@ func init() {
 		beego.Router(config.LogstashConfig().BaseCfg.MetricsRouter,
 			&controllers.LogstashController{}, "get:LogstashMetrics")
 	}
+
+	// ping exporter
+	if config.PingConfig().BaseCfg.Enable {
+		beego.Router(config.PingConfig().BaseCfg.MetricsRouter,
+			&controllers.PingController{}, "get:PingMetrics")
+	}
 }

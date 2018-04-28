@@ -21,6 +21,7 @@ type GlobalConfig struct {
 	XenserverCfg Xenserver
 	ElasticsearchCfg Elasticsearch
 	LogstashCfg Logstash
+	PingCfg Ping
 }
 
 type BaseConfig struct {
@@ -85,6 +86,10 @@ type Elasticsearch struct {
 }
 
 type Logstash struct {
+	BaseCfg BaseConfig
+}
+
+type Ping struct {
 	BaseCfg BaseConfig
 }
 
@@ -432,6 +437,30 @@ func Init() {
 		}
 		globalCfg.LogstashCfg.BaseCfg.Filters = m
 	}
+
+	// ping exporter
+	globalCfg.PingCfg.BaseCfg.Enable = beego.AppConfig.DefaultBool("ping_exporter", false)
+	if PingConfig().BaseCfg.Enable {
+		globalCfg.PingCfg.BaseCfg.UnixSockFile = beego.AppConfig.DefaultString("ping_exporter.unix_sock",
+			"/dev/shm/ping_exporter.sock")
+		globalCfg.PingCfg.BaseCfg.MetricsPath = beego.AppConfig.DefaultString("ping_exporter.metrics_path",
+			"/metrics")
+		globalCfg.PingCfg.BaseCfg.MetricsRouter = beego.AppConfig.DefaultString("ping_exporter.metrics_router",
+			"/ping")
+		globalCfg.PingCfg.BaseCfg.Timeout = time.Duration(beego.AppConfig.DefaultInt("ping_exporter.timeout",
+			5)) * time.Second
+		filters := strings.Split(beego.AppConfig.DefaultString("ping_exporter.filters", ""),
+			",")
+		var m map[string]string
+		m = make(map[string]string)
+		for _, s := range filters {
+			if len(s) == 0 {
+				continue
+			}
+			m[s] = s
+		}
+		globalCfg.PingCfg.BaseCfg.Filters = m
+	}
 }
 
 func NodeConfig() Node {
@@ -488,4 +517,8 @@ func ElasticsearchConfig() Elasticsearch {
 
 func LogstashConfig() Logstash {
 	return globalCfg.LogstashCfg
+}
+
+func PingConfig() Ping {
+	return globalCfg.PingCfg
 }

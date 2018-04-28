@@ -145,3 +145,13 @@ func (c *LogstashController) LogstashMetrics() {
 	r := models.LogstashMetrics()
 	c.Ctx.Output.Body([]byte(r))
 }
+
+// ping exporter
+type PingController struct {
+	beego.Controller
+}
+
+func (c *PingController) PingMetrics() {
+	r := models.PingMetrics()
+	c.Ctx.Output.Body([]byte(r))
+}
