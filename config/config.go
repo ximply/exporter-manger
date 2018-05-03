@@ -22,6 +22,7 @@ type GlobalConfig struct {
 	ElasticsearchCfg Elasticsearch
 	LogstashCfg Logstash
 	PingCfg Ping
+	TcpPingCfg TcpPing
 }
 
 type BaseConfig struct {
@@ -90,6 +91,10 @@ type Logstash struct {
 }
 
 type Ping struct {
+	BaseCfg BaseConfig
+}
+
+type TcpPing struct {
 	BaseCfg BaseConfig
 }
 
@@ -461,6 +466,30 @@ func Init() {
 		}
 		globalCfg.PingCfg.BaseCfg.Filters = m
 	}
+
+	// tcp ping exporter
+	globalCfg.TcpPingCfg.BaseCfg.Enable = beego.AppConfig.DefaultBool("tcpping_exporter", false)
+	if TcpPingConfig().BaseCfg.Enable {
+		globalCfg.TcpPingCfg.BaseCfg.UnixSockFile = beego.AppConfig.DefaultString("tcpping_exporter.unix_sock",
+			"/dev/shm/tcpping_exporter.sock")
+		globalCfg.TcpPingCfg.BaseCfg.MetricsPath = beego.AppConfig.DefaultString("tcpping_exporter.metrics_path",
+			"/metrics")
+		globalCfg.TcpPingCfg.BaseCfg.MetricsRouter = beego.AppConfig.DefaultString("tcpping_exporter.metrics_router",
+			"/tcpping")
+		globalCfg.TcpPingCfg.BaseCfg.Timeout = time.Duration(beego.AppConfig.DefaultInt("tcpping_exporter.timeout",
+			5)) * time.Second
+		filters := strings.Split(beego.AppConfig.DefaultString("tcpping_exporter.filters", ""),
+			",")
+		var m map[string]string
+		m = make(map[string]string)
+		for _, s := range filters {
+			if len(s) == 0 {
+				continue
+			}
+			m[s] = s
+		}
+		globalCfg.TcpPingCfg.BaseCfg.Filters = m
+	}
 }
 
 func NodeConfig() Node {
@@ -521,4 +550,8 @@ func LogstashConfig() Logstash {
 
 func PingConfig() Ping {
 	return globalCfg.PingCfg
+}
+
+func TcpPingConfig() TcpPing {
+	return globalCfg.TcpPingCfg
 }

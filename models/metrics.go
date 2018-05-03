@@ -247,3 +247,14 @@ func PingMetrics() string {
 
 	return overFilters(rsp.Rsp, config.PingConfig().BaseCfg.Filters)
 }
+
+func TcpPingMetrics() string {
+	rsp := metricsFromUnixSock(config.TcpPingConfig().BaseCfg.UnixSockFile,
+		config.TcpPingConfig().BaseCfg.MetricsPath,
+		config.TcpPingConfig().BaseCfg.Timeout)
+	if strings.Compare(rsp.Status, "200") != 0 {
+		return ""
+	}
+
+	return overFilters(rsp.Rsp, config.TcpPingConfig().BaseCfg.Filters)
+}

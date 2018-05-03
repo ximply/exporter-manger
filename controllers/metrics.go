@@ -155,3 +155,13 @@ func (c *PingController) PingMetrics() {
 	r := models.PingMetrics()
 	c.Ctx.Output.Body([]byte(r))
 }
+
+// tcp ping exporter
+type TcpPingController struct {
+	beego.Controller
+}
+
+func (c *TcpPingController) TcpPingMetrics() {
+	r := models.TcpPingMetrics()
+	c.Ctx.Output.Body([]byte(r))
+}

@@ -88,4 +88,10 @@ func init() {
 		beego.Router(config.PingConfig().BaseCfg.MetricsRouter,
 			&controllers.PingController{}, "get:PingMetrics")
 	}
+
+	// tcp ping exporter
+	if config.TcpPingConfig().BaseCfg.Enable {
+		beego.Router(config.TcpPingConfig().BaseCfg.MetricsRouter,
+			&controllers.TcpPingController{}, "get:TcpPingMetrics")
+	}
 }
