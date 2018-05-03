@@ -23,6 +23,7 @@ type GlobalConfig struct {
 	LogstashCfg Logstash
 	PingCfg Ping
 	TcpPingCfg TcpPing
+	HttpStatCfg HttpStat
 }
 
 type BaseConfig struct {
@@ -95,6 +96,10 @@ type Ping struct {
 }
 
 type TcpPing struct {
+	BaseCfg BaseConfig
+}
+
+type HttpStat struct {
 	BaseCfg BaseConfig
 }
 
@@ -490,6 +495,30 @@ func Init() {
 		}
 		globalCfg.TcpPingCfg.BaseCfg.Filters = m
 	}
+
+	// httpstat exporter
+	globalCfg.HttpStatCfg.BaseCfg.Enable = beego.AppConfig.DefaultBool("httpstat_exporter", false)
+	if HttpStatConfig().BaseCfg.Enable {
+		globalCfg.HttpStatCfg.BaseCfg.UnixSockFile = beego.AppConfig.DefaultString("httpstat_exporter.unix_sock",
+			"/dev/shm/httpstat_exporter.sock")
+		globalCfg.HttpStatCfg.BaseCfg.MetricsPath = beego.AppConfig.DefaultString("httpstat_exporter.metrics_path",
+			"/metrics")
+		globalCfg.HttpStatCfg.BaseCfg.MetricsRouter = beego.AppConfig.DefaultString("httpstat_exporter.metrics_router",
+			"/httpstat")
+		globalCfg.HttpStatCfg.BaseCfg.Timeout = time.Duration(beego.AppConfig.DefaultInt("httpstat_exporter.timeout",
+			5)) * time.Second
+		filters := strings.Split(beego.AppConfig.DefaultString("httpstat_exporter.filters", ""),
+			",")
+		var m map[string]string
+		m = make(map[string]string)
+		for _, s := range filters {
+			if len(s) == 0 {
+				continue
+			}
+			m[s] = s
+		}
+		globalCfg.HttpStatCfg.BaseCfg.Filters = m
+	}
 }
 
 func NodeConfig() Node {
@@ -554,4 +583,8 @@ func PingConfig() Ping {
 
 func TcpPingConfig() TcpPing {
 	return globalCfg.TcpPingCfg
+}
+
+func HttpStatConfig() HttpStat {
+	return globalCfg.HttpStatCfg
 }

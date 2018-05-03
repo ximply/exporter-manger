@@ -94,4 +94,10 @@ func init() {
 		beego.Router(config.TcpPingConfig().BaseCfg.MetricsRouter,
 			&controllers.TcpPingController{}, "get:TcpPingMetrics")
 	}
+
+	// httpstat exporter
+	if config.HttpStatConfig().BaseCfg.Enable {
+		beego.Router(config.HttpStatConfig().BaseCfg.MetricsRouter,
+			&controllers.HttpStatController{}, "get:HttpStatMetrics")
+	}
 }

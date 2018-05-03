@@ -165,3 +165,13 @@ func (c *TcpPingController) TcpPingMetrics() {
 	r := models.TcpPingMetrics()
 	c.Ctx.Output.Body([]byte(r))
 }
+
+// httpstat exporter
+type HttpStatController struct {
+	beego.Controller
+}
+
+func (c *HttpStatController) HttpStatMetrics() {
+	r := models.HttpStatMetrics()
+	c.Ctx.Output.Body([]byte(r))
+}
