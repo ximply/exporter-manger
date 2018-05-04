@@ -269,3 +269,14 @@ func HttpStatMetrics() string {
 
 	return overFilters(rsp.Rsp, config.HttpStatConfig().BaseCfg.Filters)
 }
+
+func PingDomainMetrics() string {
+	rsp := metricsFromUnixSock(config.PingDomainConfig().BaseCfg.UnixSockFile,
+		config.PingDomainConfig().BaseCfg.MetricsPath,
+		config.PingDomainConfig().BaseCfg.Timeout)
+	if strings.Compare(rsp.Status, "200") != 0 {
+		return ""
+	}
+
+	return overFilters(rsp.Rsp, config.PingDomainConfig().BaseCfg.Filters)
+}

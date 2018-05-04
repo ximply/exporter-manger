@@ -24,6 +24,7 @@ type GlobalConfig struct {
 	PingCfg Ping
 	TcpPingCfg TcpPing
 	HttpStatCfg HttpStat
+	PingDomainCfg PingDomain
 }
 
 type BaseConfig struct {
@@ -100,6 +101,10 @@ type TcpPing struct {
 }
 
 type HttpStat struct {
+	BaseCfg BaseConfig
+}
+
+type PingDomain struct {
 	BaseCfg BaseConfig
 }
 
@@ -519,6 +524,30 @@ func Init() {
 		}
 		globalCfg.HttpStatCfg.BaseCfg.Filters = m
 	}
+
+	// ping domain exporter
+	globalCfg.PingDomainCfg.BaseCfg.Enable = beego.AppConfig.DefaultBool("pingdomain_exporter", false)
+	if PingDomainConfig().BaseCfg.Enable {
+		globalCfg.PingDomainCfg.BaseCfg.UnixSockFile = beego.AppConfig.DefaultString("pingdomain_exporter.unix_sock",
+			"/dev/shm/pingdomain_exporter.sock")
+		globalCfg.PingDomainCfg.BaseCfg.MetricsPath = beego.AppConfig.DefaultString("pingdomain_exporter.metrics_path",
+			"/metrics")
+		globalCfg.PingDomainCfg.BaseCfg.MetricsRouter = beego.AppConfig.DefaultString("pingdomain_exporter.metrics_router",
+			"/pingdomain")
+		globalCfg.PingDomainCfg.BaseCfg.Timeout = time.Duration(beego.AppConfig.DefaultInt("pingdomain_exporter.timeout",
+			5)) * time.Second
+		filters := strings.Split(beego.AppConfig.DefaultString("pingdomain_exporter.filters", ""),
+			",")
+		var m map[string]string
+		m = make(map[string]string)
+		for _, s := range filters {
+			if len(s) == 0 {
+				continue
+			}
+			m[s] = s
+		}
+		globalCfg.PingDomainCfg.BaseCfg.Filters = m
+	}
 }
 
 func NodeConfig() Node {
@@ -587,4 +616,8 @@ func TcpPingConfig() TcpPing {
 
 func HttpStatConfig() HttpStat {
 	return globalCfg.HttpStatCfg
+}
+
+func PingDomainConfig() PingDomain {
+	return globalCfg.PingDomainCfg
 }

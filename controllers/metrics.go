@@ -175,3 +175,13 @@ func (c *HttpStatController) HttpStatMetrics() {
 	r := models.HttpStatMetrics()
 	c.Ctx.Output.Body([]byte(r))
 }
+
+// ping domain exporter
+type PingDomainController struct {
+	beego.Controller
+}
+
+func (c *PingDomainController) PingDomainMetrics() {
+	r := models.PingDomainMetrics()
+	c.Ctx.Output.Body([]byte(r))
+}

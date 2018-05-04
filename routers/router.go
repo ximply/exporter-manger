@@ -100,4 +100,10 @@ func init() {
 		beego.Router(config.HttpStatConfig().BaseCfg.MetricsRouter,
 			&controllers.HttpStatController{}, "get:HttpStatMetrics")
 	}
+
+	// ping domain exporter
+	if config.PingDomainConfig().BaseCfg.Enable {
+		beego.Router(config.PingDomainConfig().BaseCfg.MetricsRouter,
+			&controllers.PingDomainController{}, "get:PingDomainMetrics")
+	}
 }
