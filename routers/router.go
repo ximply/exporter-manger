@@ -117,4 +117,10 @@ func init() {
 		beego.Router(config.CertwacherConfig().BaseCfg.MetricsRouter,
 			&controllers.CertwacherController{}, "get:CertwacherMetrics")
 	}
+
+	// alive exporter
+	if config.AliveConfig().BaseCfg.Enable {
+		beego.Router(config.AliveConfig().BaseCfg.MetricsRouter,
+			&controllers.AliveController{}, "get:AliveMetrics")
+	}
 }

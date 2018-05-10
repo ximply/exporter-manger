@@ -27,6 +27,7 @@ type GlobalConfig struct {
 	HttpStatCfg HttpStat
 	PingDomainCfg PingDomain
 	CertwacherCfg Certwacher
+	AliveCfg Alive
 }
 
 type BaseConfig struct {
@@ -115,6 +116,10 @@ type PingDomain struct {
 }
 
 type Certwacher struct {
+	BaseCfg BaseConfig
+}
+
+type Alive struct {
 	BaseCfg BaseConfig
 }
 
@@ -606,6 +611,30 @@ func Init() {
 		}
 		globalCfg.CertwacherCfg.BaseCfg.Filters = m
 	}
+
+	// alive exporter
+	globalCfg.AliveCfg.BaseCfg.Enable = beego.AppConfig.DefaultBool("alive_exporter", false)
+	if AliveConfig().BaseCfg.Enable {
+		globalCfg.AliveCfg.BaseCfg.UnixSockFile = beego.AppConfig.DefaultString("alive_exporter.unix_sock",
+			"/dev/shm/alive_exporter.sock")
+		globalCfg.AliveCfg.BaseCfg.MetricsPath = beego.AppConfig.DefaultString("alive_exporter.metrics_path",
+			"/metrics")
+		globalCfg.AliveCfg.BaseCfg.MetricsRouter = beego.AppConfig.DefaultString("alive_exporter.metrics_router",
+			"/alive")
+		globalCfg.AliveCfg.BaseCfg.Timeout = time.Duration(beego.AppConfig.DefaultInt("alive_exporter.timeout",
+			5)) * time.Second
+		filters := strings.Split(beego.AppConfig.DefaultString("alive_exporter.filters", ""),
+			",")
+		var m map[string]string
+		m = make(map[string]string)
+		for _, s := range filters {
+			if len(s) == 0 {
+				continue
+			}
+			m[s] = s
+		}
+		globalCfg.AliveCfg.BaseCfg.Filters = m
+	}
 }
 
 func NodeConfig() Node {
@@ -686,4 +715,8 @@ func PingDomainConfig() PingDomain {
 
 func CertwacherConfig() Certwacher {
 	return globalCfg.CertwacherCfg
+}
+
+func AliveConfig() Alive {
+	return globalCfg.AliveCfg
 }

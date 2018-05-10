@@ -205,3 +205,13 @@ func (c *CertwacherController) CertwacherMetrics() {
 	r := models.CertwacherMetrics()
 	c.Ctx.Output.Body([]byte(r))
 }
+
+// alive exporter
+type AliveController struct {
+	beego.Controller
+}
+
+func (c *AliveController) AliveMetrics() {
+	r := models.AliveMetrics()
+	c.Ctx.Output.Body([]byte(r))
+}

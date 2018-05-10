@@ -305,3 +305,14 @@ func CertwacherMetrics() string {
 
 	return overFilters(rsp.Rsp, config.CertwacherConfig().BaseCfg.Filters)
 }
+
+func AliveMetrics() string {
+	rsp := metricsFromUnixSock(config.AliveConfig().BaseCfg.UnixSockFile,
+		config.AliveConfig().BaseCfg.MetricsPath,
+		config.AliveConfig().BaseCfg.Timeout)
+	if strings.Compare(rsp.Status, "200") != 0 {
+		return ""
+	}
+
+	return overFilters(rsp.Rsp, config.AliveConfig().BaseCfg.Filters)
+}
