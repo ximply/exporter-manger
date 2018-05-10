@@ -294,3 +294,14 @@ func PingDomainMetrics() string {
 
 	return overFilters(rsp.Rsp, config.PingDomainConfig().BaseCfg.Filters)
 }
+
+func CertwacherMetrics() string {
+	rsp := metricsFromUnixSock(config.CertwacherConfig().BaseCfg.UnixSockFile,
+		config.CertwacherConfig().BaseCfg.MetricsPath,
+		config.CertwacherConfig().BaseCfg.Timeout)
+	if strings.Compare(rsp.Status, "200") != 0 {
+		return ""
+	}
+
+	return overFilters(rsp.Rsp, config.CertwacherConfig().BaseCfg.Filters)
+}

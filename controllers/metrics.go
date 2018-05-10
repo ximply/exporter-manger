@@ -195,3 +195,13 @@ func (c *PingDomainController) PingDomainMetrics() {
 	r := models.PingDomainMetrics()
 	c.Ctx.Output.Body([]byte(r))
 }
+
+// certwacher exporter
+type CertwacherController struct {
+	beego.Controller
+}
+
+func (c *CertwacherController) CertwacherMetrics() {
+	r := models.CertwacherMetrics()
+	c.Ctx.Output.Body([]byte(r))
+}

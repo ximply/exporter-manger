@@ -111,4 +111,10 @@ func init() {
 		beego.Router(config.PingDomainConfig().BaseCfg.MetricsRouter,
 			&controllers.PingDomainController{}, "get:PingDomainMetrics")
 	}
+
+	// certwacher exporter
+	if config.CertwacherConfig().BaseCfg.Enable {
+		beego.Router(config.CertwacherConfig().BaseCfg.MetricsRouter,
+			&controllers.CertwacherController{}, "get:CertwacherMetrics")
+	}
 }

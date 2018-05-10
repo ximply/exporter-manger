@@ -26,6 +26,7 @@ type GlobalConfig struct {
 	TcpPingCfg TcpPing
 	HttpStatCfg HttpStat
 	PingDomainCfg PingDomain
+	CertwacherCfg Certwacher
 }
 
 type BaseConfig struct {
@@ -110,6 +111,10 @@ type HttpStat struct {
 }
 
 type PingDomain struct {
+	BaseCfg BaseConfig
+}
+
+type Certwacher struct {
 	BaseCfg BaseConfig
 }
 
@@ -577,6 +582,30 @@ func Init() {
 		}
 		globalCfg.PingDomainCfg.BaseCfg.Filters = m
 	}
+
+	// certwacher exporter
+	globalCfg.CertwacherCfg.BaseCfg.Enable = beego.AppConfig.DefaultBool("cert_exporter", false)
+	if CertwacherConfig().BaseCfg.Enable {
+		globalCfg.CertwacherCfg.BaseCfg.UnixSockFile = beego.AppConfig.DefaultString("cert_exporter.unix_sock",
+			"/dev/shm/cert_exporter.sock")
+		globalCfg.CertwacherCfg.BaseCfg.MetricsPath = beego.AppConfig.DefaultString("cert_exporter.metrics_path",
+			"/metrics")
+		globalCfg.CertwacherCfg.BaseCfg.MetricsRouter = beego.AppConfig.DefaultString("cert_exporter.metrics_router",
+			"/cert")
+		globalCfg.CertwacherCfg.BaseCfg.Timeout = time.Duration(beego.AppConfig.DefaultInt("cert_exporter.timeout",
+			5)) * time.Second
+		filters := strings.Split(beego.AppConfig.DefaultString("cert_exporter.filters", ""),
+			",")
+		var m map[string]string
+		m = make(map[string]string)
+		for _, s := range filters {
+			if len(s) == 0 {
+				continue
+			}
+			m[s] = s
+		}
+		globalCfg.CertwacherCfg.BaseCfg.Filters = m
+	}
 }
 
 func NodeConfig() Node {
@@ -653,4 +682,8 @@ func HttpStatConfig() HttpStat {
 
 func PingDomainConfig() PingDomain {
 	return globalCfg.PingDomainCfg
+}
+
+func CertwacherConfig() Certwacher {
+	return globalCfg.CertwacherCfg
 }
