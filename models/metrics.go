@@ -163,6 +163,17 @@ func MysqldMetrics() string {
 	return overFilters(rsp.Rsp, config.MysqlConfig().BaseCfg.Filters)
 }
 
+func MultiMysqldMetrics() string {
+	rsp := metricsFromUnixSock(config.MultiMysqlConfig().BaseCfg.UnixSockFile,
+		config.MultiMysqlConfig().BaseCfg.MetricsPath,
+		config.MultiMysqlConfig().BaseCfg.Timeout)
+	if strings.Compare(rsp.Status, "200") != 0 {
+		return ""
+	}
+
+	return overFilters(rsp.Rsp, config.MultiMysqlConfig().BaseCfg.Filters)
+}
+
 func HaproxyMetrics() string {
 	rsp := metricsFromUnixSock(config.HaproxyConfig().BaseCfg.UnixSockFile,
 		config.HaproxyConfig().BaseCfg.MetricsPath,

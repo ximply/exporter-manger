@@ -76,6 +76,16 @@ func (c *MysqldController) MysqldMetrics() {
 	c.Ctx.Output.Body([]byte(r))
 }
 
+// multi mysqld exporter
+type MultiMysqldController struct {
+	beego.Controller
+}
+
+func (c *MultiMysqldController) MultiMysqldMetrics() {
+	r := models.MultiMysqldMetrics()
+	c.Ctx.Output.Body([]byte(r))
+}
+
 // haproxy exporter
 type HaproxyController struct {
 	beego.Controller

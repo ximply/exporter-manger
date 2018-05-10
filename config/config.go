@@ -14,6 +14,7 @@ type GlobalConfig struct {
 	RedisCfg Redis
 	MemcachedCfg Memcached
 	MysqlCfg Mysql
+	MultiMysqlCfg MultiMysql
 	HaproxyCfg Haproxy
 	GearmanCfg Gearman
 	MongodbCfg Mongodb
@@ -61,6 +62,10 @@ type Memcached struct {
 }
 
 type Mysql struct {
+	BaseCfg BaseConfig
+}
+
+type MultiMysql struct {
 	BaseCfg BaseConfig
 }
 
@@ -283,6 +288,30 @@ func Init() {
 			m[s] = s
 		}
 		globalCfg.MysqlCfg.BaseCfg.Filters = m
+	}
+
+	// multi mysqld exporter
+	globalCfg.MultiMysqlCfg.BaseCfg.Enable = beego.AppConfig.DefaultBool("multimysqld_exporter", false)
+	if MultiMysqlConfig().BaseCfg.Enable {
+		globalCfg.MultiMysqlCfg.BaseCfg.UnixSockFile = beego.AppConfig.DefaultString("multimysqld_exporter.unix_sock",
+			"/dev/shm/multimysqld_exporter.sock")
+		globalCfg.MultiMysqlCfg.BaseCfg.MetricsPath = beego.AppConfig.DefaultString("multimysqld_exporter.metrics_path",
+			"/metrics")
+		globalCfg.MultiMysqlCfg.BaseCfg.MetricsRouter = beego.AppConfig.DefaultString("multimysqld_exporter.metrics_router",
+			"/mysqls")
+		globalCfg.MultiMysqlCfg.BaseCfg.Timeout = time.Duration(beego.AppConfig.DefaultInt("multimysqld_exporter.timeout",
+			5)) * time.Second
+		filters := strings.Split(beego.AppConfig.DefaultString("multimysqld_exporter.filters", ""),
+			",")
+		var m map[string]string
+		m = make(map[string]string)
+		for _, s := range filters {
+			if len(s) == 0 {
+				continue
+			}
+			m[s] = s
+		}
+		globalCfg.MultiMysqlCfg.BaseCfg.Filters = m
 	}
 
 	// haproxy exporter
@@ -576,6 +605,10 @@ func MemcachedConfig() Memcached {
 
 func MysqlConfig() Mysql {
 	return globalCfg.MysqlCfg
+}
+
+func MultiMysqlConfig() MultiMysql {
+	return globalCfg.MultiMysqlCfg
 }
 
 func HaproxyConfig() Haproxy {
