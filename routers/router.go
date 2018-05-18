@@ -123,4 +123,10 @@ func init() {
 		beego.Router(config.AliveConfig().BaseCfg.MetricsRouter,
 			&controllers.AliveController{}, "get:AliveMetrics")
 	}
+
+	// rabbitmq exporter
+	if config.RabbitmqConfig().BaseCfg.Enable {
+		beego.Router(config.RabbitmqConfig().BaseCfg.MetricsRouter,
+			&controllers.RabbitmqController{}, "get:RabbitmqMetrics")
+	}
 }

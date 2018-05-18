@@ -316,3 +316,14 @@ func AliveMetrics() string {
 
 	return overFilters(rsp.Rsp, config.AliveConfig().BaseCfg.Filters)
 }
+
+func RabbitmqMetrics() string {
+	rsp := metricsFromUnixSock(config.RabbitmqConfig().BaseCfg.UnixSockFile,
+		config.RabbitmqConfig().BaseCfg.MetricsPath,
+		config.RabbitmqConfig().BaseCfg.Timeout)
+	if strings.Compare(rsp.Status, "200") != 0 {
+		return ""
+	}
+
+	return overFilters(rsp.Rsp, config.RabbitmqConfig().BaseCfg.Filters)
+}

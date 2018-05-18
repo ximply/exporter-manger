@@ -28,6 +28,7 @@ type GlobalConfig struct {
 	PingDomainCfg PingDomain
 	CertwacherCfg Certwacher
 	AliveCfg Alive
+	RabbitmqCfg Rabbitmq
 }
 
 type BaseConfig struct {
@@ -120,6 +121,10 @@ type Certwacher struct {
 }
 
 type Alive struct {
+	BaseCfg BaseConfig
+}
+
+type Rabbitmq struct {
 	BaseCfg BaseConfig
 }
 
@@ -635,6 +640,30 @@ func Init() {
 		}
 		globalCfg.AliveCfg.BaseCfg.Filters = m
 	}
+
+	// rabbitmq exporter
+	globalCfg.RabbitmqCfg.BaseCfg.Enable = beego.AppConfig.DefaultBool("rabbitmq_exporter", false)
+	if RabbitmqConfig().BaseCfg.Enable {
+		globalCfg.RabbitmqCfg.BaseCfg.UnixSockFile = beego.AppConfig.DefaultString("rabbitmq_exporter.unix_sock",
+			"/dev/shm/rabbitmq_exporter.sock")
+		globalCfg.RabbitmqCfg.BaseCfg.MetricsPath = beego.AppConfig.DefaultString("rabbitmq_exporter.metrics_path",
+			"/metrics")
+		globalCfg.RabbitmqCfg.BaseCfg.MetricsRouter = beego.AppConfig.DefaultString("rabbitmq_exporter.metrics_router",
+			"/rabbitmq")
+		globalCfg.RabbitmqCfg.BaseCfg.Timeout = time.Duration(beego.AppConfig.DefaultInt("rabbitmq_exporter.timeout",
+			5)) * time.Second
+		filters := strings.Split(beego.AppConfig.DefaultString("rabbitmq_exporter.filters", ""),
+			",")
+		var m map[string]string
+		m = make(map[string]string)
+		for _, s := range filters {
+			if len(s) == 0 {
+				continue
+			}
+			m[s] = s
+		}
+		globalCfg.RabbitmqCfg.BaseCfg.Filters = m
+	}
 }
 
 func NodeConfig() Node {
@@ -719,4 +748,8 @@ func CertwacherConfig() Certwacher {
 
 func AliveConfig() Alive {
 	return globalCfg.AliveCfg
+}
+
+func RabbitmqConfig() Rabbitmq {
+	return globalCfg.RabbitmqCfg
 }

@@ -215,3 +215,13 @@ func (c *AliveController) AliveMetrics() {
 	r := models.AliveMetrics()
 	c.Ctx.Output.Body([]byte(r))
 }
+
+// rabbitmq exporter
+type RabbitmqController struct {
+	beego.Controller
+}
+
+func (c *RabbitmqController) RabbitmqMetrics() {
+	r := models.RabbitmqMetrics()
+	c.Ctx.Output.Body([]byte(r))
+}
