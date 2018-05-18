@@ -327,3 +327,14 @@ func RabbitmqMetrics() string {
 
 	return overFilters(rsp.Rsp, config.RabbitmqConfig().BaseCfg.Filters)
 }
+
+func SupervisorMetrics() string {
+	rsp := metricsFromUnixSock(config.SupervisorConfig().BaseCfg.UnixSockFile,
+		config.SupervisorConfig().BaseCfg.MetricsPath,
+		config.SupervisorConfig().BaseCfg.Timeout)
+	if strings.Compare(rsp.Status, "200") != 0 {
+		return ""
+	}
+
+	return overFilters(rsp.Rsp, config.SupervisorConfig().BaseCfg.Filters)
+}

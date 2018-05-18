@@ -225,3 +225,13 @@ func (c *RabbitmqController) RabbitmqMetrics() {
 	r := models.RabbitmqMetrics()
 	c.Ctx.Output.Body([]byte(r))
 }
+
+// supervisor exporter
+type SupervisorController struct {
+	beego.Controller
+}
+
+func (c *SupervisorController) SupervisorMetrics() {
+	r := models.SupervisorMetrics()
+	c.Ctx.Output.Body([]byte(r))
+}

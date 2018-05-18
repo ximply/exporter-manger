@@ -29,6 +29,7 @@ type GlobalConfig struct {
 	CertwacherCfg Certwacher
 	AliveCfg Alive
 	RabbitmqCfg Rabbitmq
+	SupervisorCfg Supervisor
 }
 
 type BaseConfig struct {
@@ -125,6 +126,10 @@ type Alive struct {
 }
 
 type Rabbitmq struct {
+	BaseCfg BaseConfig
+}
+
+type Supervisor struct {
 	BaseCfg BaseConfig
 }
 
@@ -664,6 +669,30 @@ func Init() {
 		}
 		globalCfg.RabbitmqCfg.BaseCfg.Filters = m
 	}
+
+	// supervisor exporter
+	globalCfg.SupervisorCfg.BaseCfg.Enable = beego.AppConfig.DefaultBool("supervisor_exporter", false)
+	if SupervisorConfig().BaseCfg.Enable {
+		globalCfg.SupervisorCfg.BaseCfg.UnixSockFile = beego.AppConfig.DefaultString("supervisor_exporter.unix_sock",
+			"/dev/shm/supervisor_exporter.sock")
+		globalCfg.SupervisorCfg.BaseCfg.MetricsPath = beego.AppConfig.DefaultString("supervisor_exporter.metrics_path",
+			"/metrics")
+		globalCfg.SupervisorCfg.BaseCfg.MetricsRouter = beego.AppConfig.DefaultString("supervisor_exporter.metrics_router",
+			"/rabbitmq")
+		globalCfg.SupervisorCfg.BaseCfg.Timeout = time.Duration(beego.AppConfig.DefaultInt("supervisor_exporter.timeout",
+			5)) * time.Second
+		filters := strings.Split(beego.AppConfig.DefaultString("supervisor_exporter.filters", ""),
+			",")
+		var m map[string]string
+		m = make(map[string]string)
+		for _, s := range filters {
+			if len(s) == 0 {
+				continue
+			}
+			m[s] = s
+		}
+		globalCfg.SupervisorCfg.BaseCfg.Filters = m
+	}
 }
 
 func NodeConfig() Node {
@@ -752,4 +781,8 @@ func AliveConfig() Alive {
 
 func RabbitmqConfig() Rabbitmq {
 	return globalCfg.RabbitmqCfg
+}
+
+func SupervisorConfig() Supervisor {
+	return globalCfg.SupervisorCfg
 }

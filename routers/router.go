@@ -129,4 +129,10 @@ func init() {
 		beego.Router(config.RabbitmqConfig().BaseCfg.MetricsRouter,
 			&controllers.RabbitmqController{}, "get:RabbitmqMetrics")
 	}
+
+	// supervisor exporter
+	if config.SupervisorConfig().BaseCfg.Enable {
+		beego.Router(config.SupervisorConfig().BaseCfg.MetricsRouter,
+			&controllers.SupervisorController{}, "get:SupervisorMetrics")
+	}
 }
