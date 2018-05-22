@@ -142,4 +142,10 @@ func init() {
 			&controllers.JavaController{}, "get:JavaMetrics")
 	}
 	beego.Router("/javainfo", &controllers.JavaInfoController{},"post:JavaInfo")
+
+	// beanstalkd exporter
+	if config.BeanstalkdConfig().BaseCfg.Enable {
+		beego.Router(config.BeanstalkdConfig().BaseCfg.MetricsRouter,
+			&controllers.BeanstalkdController{}, "get:BeanstalkdMetrics")
+	}
 }

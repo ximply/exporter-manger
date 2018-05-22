@@ -401,3 +401,14 @@ func JavaInfo(info string) {
 		}
 	}
 }
+
+func BeanstalkdMetrics() string {
+	rsp := metricsFromUnixSock(config.BeanstalkdConfig().BaseCfg.UnixSockFile,
+		config.BeanstalkdConfig().BaseCfg.MetricsPath,
+		config.BeanstalkdConfig().BaseCfg.Timeout)
+	if strings.Compare(rsp.Status, "200") != 0 {
+		return ""
+	}
+
+	return overFilters(rsp.Rsp, config.BeanstalkdConfig().BaseCfg.Filters)
+}

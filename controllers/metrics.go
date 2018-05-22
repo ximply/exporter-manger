@@ -261,3 +261,13 @@ func (c *JavaInfoController) JavaInfo() {
 	c.Data["json"] = out
 	c.ServeJSON()
 }
+
+// beanstalkd exporter
+type BeanstalkdController struct {
+	beego.Controller
+}
+
+func (c *BeanstalkdController) BeanstalkdMetrics() {
+	r := models.BeanstalkdMetrics()
+	c.Ctx.Output.Body([]byte(r))
+}

@@ -31,6 +31,7 @@ type GlobalConfig struct {
 	RabbitmqCfg Rabbitmq
 	SupervisorCfg Supervisor
 	JavaCfg Java
+	BeanstalkdCfg Beanstalkd
 }
 
 type BaseConfig struct {
@@ -135,6 +136,10 @@ type Supervisor struct {
 }
 
 type Java struct {
+	BaseCfg BaseConfig
+}
+
+type Beanstalkd struct {
 	BaseCfg BaseConfig
 }
 
@@ -718,6 +723,30 @@ func Init() {
 		}
 		globalCfg.JavaCfg.BaseCfg.Filters = m
 	}
+
+	// beanstalkd exporter
+	globalCfg.BeanstalkdCfg.BaseCfg.Enable = beego.AppConfig.DefaultBool("beanstalkd_exporter", false)
+	if BeanstalkdConfig().BaseCfg.Enable {
+		globalCfg.BeanstalkdCfg.BaseCfg.UnixSockFile = beego.AppConfig.DefaultString("beanstalkd_exporter.unix_sock",
+			"/dev/shm/beanstalkd_exporter.sock")
+		globalCfg.BeanstalkdCfg.BaseCfg.MetricsPath = beego.AppConfig.DefaultString("beanstalkd_exporter.metrics_path",
+			"/metrics")
+		globalCfg.BeanstalkdCfg.BaseCfg.MetricsRouter = beego.AppConfig.DefaultString("beanstalkd_exporter.metrics_router",
+			"/beanstalkd")
+		globalCfg.BeanstalkdCfg.BaseCfg.Timeout = time.Duration(beego.AppConfig.DefaultInt("beanstalkd_exporter.timeout",
+			5)) * time.Second
+		filters := strings.Split(beego.AppConfig.DefaultString("beanstalkd_exporter.filters", ""),
+			",")
+		var m map[string]string
+		m = make(map[string]string)
+		for _, s := range filters {
+			if len(s) == 0 {
+				continue
+			}
+			m[s] = s
+		}
+		globalCfg.BeanstalkdCfg.BaseCfg.Filters = m
+	}
 }
 
 func NodeConfig() Node {
@@ -814,4 +843,8 @@ func SupervisorConfig() Supervisor {
 
 func JavaConfig() Java {
 	return globalCfg.JavaCfg
+}
+
+func BeanstalkdConfig() Beanstalkd {
+	return globalCfg.BeanstalkdCfg
 }
