@@ -10,11 +10,23 @@ import (
 	"io/ioutil"
 	"context"
 	"time"
+	"sync"
 )
 
 type UnixResponse struct {
 	Rsp string
 	Status string
+}
+
+type JavaInfoItem struct {
+	Info string
+	UpdateTime time.Time
+}
+var g_javaInfoLock sync.RWMutex
+var g_javInfo map[string]*JavaInfoItem
+
+func Init() {
+	g_javInfo = make(map[string]*JavaInfoItem)
 }
 
 func existsMetric(metric string, filters map[string]string) bool {
@@ -337,4 +349,55 @@ func SupervisorMetrics() string {
 	}
 
 	return overFilters(rsp.Rsp, config.SupervisorConfig().BaseCfg.Filters)
+}
+
+func JavaMetrics() string {
+	g_javaInfoLock.RLock()
+	r := g_javInfo
+	g_javaInfoLock.RUnlock()
+
+	ret := ""
+	now := time.Now().Unix()
+	for _, v := range r {
+		if now - v.UpdateTime.Unix() > 60 {
+			continue
+		}
+		if strings.HasSuffix(v.Info,"\n") {
+			ret += v.Info
+		} else {
+			ret += v.Info + "\n"
+		}
+	}
+
+	return overFilters(ret, config.JavaConfig().BaseCfg.Filters)
+}
+
+func JavaInfo(info string) {
+	s := strings.TrimRight(info, "\n")
+	l := strings.Split(s, "\n")
+	if len(l) > 1 {
+		target := strings.Split(l[0],"|")
+		if len(target) != 2 {
+			return
+		}
+
+		exist := false
+		g_javaInfoLock.RLock()
+		if v, ok := g_javInfo[l[0]]; ok {
+			v.Info = s
+			v.UpdateTime = time.Now()
+			exist = true
+		}
+		g_javaInfoLock.RUnlock()
+
+		if !exist {
+			i := &JavaInfoItem{
+				Info:s,
+				UpdateTime:time.Now(),
+			}
+			g_javaInfoLock.Lock()
+			g_javInfo[l[0]] = i
+			g_javaInfoLock.Unlock()
+		}
+	}
 }

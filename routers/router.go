@@ -135,4 +135,11 @@ func init() {
 		beego.Router(config.SupervisorConfig().BaseCfg.MetricsRouter,
 			&controllers.SupervisorController{}, "get:SupervisorMetrics")
 	}
+
+	// java exporter
+	if config.JavaConfig().BaseCfg.Enable {
+		beego.Router(config.JavaConfig().BaseCfg.MetricsRouter,
+			&controllers.JavaController{}, "get:JavaMetrics")
+	}
+	beego.Router("/javainfo", &controllers.JavaInfoController{},"post:JavaInfo")
 }

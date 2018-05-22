@@ -30,6 +30,7 @@ type GlobalConfig struct {
 	AliveCfg Alive
 	RabbitmqCfg Rabbitmq
 	SupervisorCfg Supervisor
+	JavaCfg Java
 }
 
 type BaseConfig struct {
@@ -130,6 +131,10 @@ type Rabbitmq struct {
 }
 
 type Supervisor struct {
+	BaseCfg BaseConfig
+}
+
+type Java struct {
 	BaseCfg BaseConfig
 }
 
@@ -693,6 +698,26 @@ func Init() {
 		}
 		globalCfg.SupervisorCfg.BaseCfg.Filters = m
 	}
+
+	// java exporter
+	globalCfg.JavaCfg.BaseCfg.Enable = beego.AppConfig.DefaultBool("java_exporter", false)
+	if JavaConfig().BaseCfg.Enable {
+		globalCfg.JavaCfg.BaseCfg.MetricsRouter = beego.AppConfig.DefaultString("java_exporter.metrics_router",
+			"/java")
+		globalCfg.JavaCfg.BaseCfg.Timeout = time.Duration(beego.AppConfig.DefaultInt("java_exporter.timeout",
+			5)) * time.Second
+		filters := strings.Split(beego.AppConfig.DefaultString("java_exporter.filters", ""),
+			",")
+		var m map[string]string
+		m = make(map[string]string)
+		for _, s := range filters {
+			if len(s) == 0 {
+				continue
+			}
+			m[s] = s
+		}
+		globalCfg.JavaCfg.BaseCfg.Filters = m
+	}
 }
 
 func NodeConfig() Node {
@@ -785,4 +810,8 @@ func RabbitmqConfig() Rabbitmq {
 
 func SupervisorConfig() Supervisor {
 	return globalCfg.SupervisorCfg
+}
+
+func JavaConfig() Java {
+	return globalCfg.JavaCfg
 }

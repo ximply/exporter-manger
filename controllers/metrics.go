@@ -3,8 +3,8 @@ package controllers
 import (
 	"github.com/astaxie/beego"
 	"github.com/ximply/exporter-manger/models"
+	"io/ioutil"
 )
-
 
 // node exporter
 type NodeController struct {
@@ -234,4 +234,30 @@ type SupervisorController struct {
 func (c *SupervisorController) SupervisorMetrics() {
 	r := models.SupervisorMetrics()
 	c.Ctx.Output.Body([]byte(r))
+}
+
+// java exporter
+type JavaController struct {
+	beego.Controller
+}
+
+func (c *JavaController) JavaMetrics() {
+	r := models.JavaMetrics()
+	c.Ctx.Output.Body([]byte(r))
+}
+
+type JavaInfoController struct {
+	beego.Controller
+}
+
+func (c *JavaInfoController) JavaInfo() {
+	body, _ := ioutil.ReadAll(c.Ctx.Request.Body)
+	bodyStr := string(body)
+    models.JavaInfo(bodyStr)
+
+	out := make(map[string]interface{})
+	out["status"] = 0
+	out["msg"] = ""
+	c.Data["json"] = out
+	c.ServeJSON()
 }
