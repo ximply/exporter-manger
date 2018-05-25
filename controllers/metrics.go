@@ -271,3 +271,13 @@ func (c *BeanstalkdController) BeanstalkdMetrics() {
 	r := models.BeanstalkdMetrics()
 	c.Ctx.Output.Body([]byte(r))
 }
+
+// bind exporter
+type BindController struct {
+	beego.Controller
+}
+
+func (c *BindController) BindMetrics() {
+	r := models.BindMetrics()
+	c.Ctx.Output.Body([]byte(r))
+}

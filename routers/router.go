@@ -148,4 +148,10 @@ func init() {
 		beego.Router(config.BeanstalkdConfig().BaseCfg.MetricsRouter,
 			&controllers.BeanstalkdController{}, "get:BeanstalkdMetrics")
 	}
+
+	// bind exporter
+	if config.BindConfig().BaseCfg.Enable {
+		beego.Router(config.BindConfig().BaseCfg.MetricsRouter,
+			&controllers.BindController{}, "get:BindMetrics")
+	}
 }

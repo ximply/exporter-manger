@@ -412,3 +412,14 @@ func BeanstalkdMetrics() string {
 
 	return overFilters(rsp.Rsp, config.BeanstalkdConfig().BaseCfg.Filters)
 }
+
+func BindMetrics() string {
+	rsp := metricsFromUnixSock(config.BindConfig().BaseCfg.UnixSockFile,
+		config.BindConfig().BaseCfg.MetricsPath,
+		config.BindConfig().BaseCfg.Timeout)
+	if strings.Compare(rsp.Status, "200") != 0 {
+		return ""
+	}
+
+	return overFilters(rsp.Rsp, config.BindConfig().BaseCfg.Filters)
+}

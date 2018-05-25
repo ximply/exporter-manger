@@ -32,6 +32,7 @@ type GlobalConfig struct {
 	SupervisorCfg Supervisor
 	JavaCfg Java
 	BeanstalkdCfg Beanstalkd
+	BindCfg Bind
 }
 
 type BaseConfig struct {
@@ -140,6 +141,10 @@ type Java struct {
 }
 
 type Beanstalkd struct {
+	BaseCfg BaseConfig
+}
+
+type Bind struct {
 	BaseCfg BaseConfig
 }
 
@@ -747,6 +752,30 @@ func Init() {
 		}
 		globalCfg.BeanstalkdCfg.BaseCfg.Filters = m
 	}
+
+	// bind exporter
+	globalCfg.BindCfg.BaseCfg.Enable = beego.AppConfig.DefaultBool("bind_exporter", false)
+	if BindConfig().BaseCfg.Enable {
+		globalCfg.BindCfg.BaseCfg.UnixSockFile = beego.AppConfig.DefaultString("bind_exporter.unix_sock",
+			"/dev/shm/bind_exporter.sock")
+		globalCfg.BindCfg.BaseCfg.MetricsPath = beego.AppConfig.DefaultString("bind_exporter.metrics_path",
+			"/metrics")
+		globalCfg.BindCfg.BaseCfg.MetricsRouter = beego.AppConfig.DefaultString("bind_exporter.metrics_router",
+			"/bind")
+		globalCfg.BindCfg.BaseCfg.Timeout = time.Duration(beego.AppConfig.DefaultInt("bind_exporter.timeout",
+			5)) * time.Second
+		filters := strings.Split(beego.AppConfig.DefaultString("bind_exporter.filters", ""),
+			",")
+		var m map[string]string
+		m = make(map[string]string)
+		for _, s := range filters {
+			if len(s) == 0 {
+				continue
+			}
+			m[s] = s
+		}
+		globalCfg.BindCfg.BaseCfg.Filters = m
+	}
 }
 
 func NodeConfig() Node {
@@ -847,4 +876,8 @@ func JavaConfig() Java {
 
 func BeanstalkdConfig() Beanstalkd {
 	return globalCfg.BeanstalkdCfg
+}
+
+func BindConfig() Bind {
+	return globalCfg.BindCfg
 }
