@@ -88,6 +88,12 @@ func init() {
 			&controllers.LogstashController{}, "get:LogstashMetrics")
 	}
 
+	// multi logstash exporter
+	if config.MultiLogstashConfig().BaseCfg.Enable {
+		beego.Router(config.MultiLogstashConfig().BaseCfg.MetricsRouter,
+			&controllers.MultiLogstashController{}, "get:MultiLogstashMetrics")
+	}
+
 	// ping exporter
 	if config.PingConfig().BaseCfg.Enable {
 		beego.Router(config.PingConfig().BaseCfg.MetricsRouter,

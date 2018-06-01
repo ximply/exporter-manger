@@ -263,6 +263,17 @@ func LogstashMetrics() string {
 	return overFilters(rsp.Rsp, config.LogstashConfig().BaseCfg.Filters)
 }
 
+func MultiLogstashMetrics() string {
+	rsp := metricsFromUnixSock(config.MultiLogstashConfig().BaseCfg.UnixSockFile,
+		config.MultiLogstashConfig().BaseCfg.MetricsPath,
+		config.MultiLogstashConfig().BaseCfg.Timeout)
+	if strings.Compare(rsp.Status, "200") != 0 {
+		return ""
+	}
+
+	return overFilters(rsp.Rsp, config.MultiLogstashConfig().BaseCfg.Filters)
+}
+
 func PingMetrics() string {
 	rsp := metricsFromUnixSock(config.PingConfig().BaseCfg.UnixSockFile,
 		config.PingConfig().BaseCfg.MetricsPath,
