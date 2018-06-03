@@ -34,6 +34,7 @@ type GlobalConfig struct {
 	JavaCfg Java
 	BeanstalkdCfg Beanstalkd
 	BindCfg Bind
+	SolrCfg Solr
 }
 
 type BaseConfig struct {
@@ -150,6 +151,10 @@ type Beanstalkd struct {
 }
 
 type Bind struct {
+	BaseCfg BaseConfig
+}
+
+type Solr struct {
 	BaseCfg BaseConfig
 }
 
@@ -805,6 +810,30 @@ func Init() {
 		}
 		globalCfg.BindCfg.BaseCfg.Filters = m
 	}
+	
+	// solr exporter
+	globalCfg.SolrCfg.BaseCfg.Enable = beego.AppConfig.DefaultBool("solr_exporter", false)
+	if SolrConfig().BaseCfg.Enable {
+		globalCfg.SolrCfg.BaseCfg.UnixSockFile = beego.AppConfig.DefaultString("solr_exporter.unix_sock",
+			"/dev/shm/solr_exporter.sock")
+		globalCfg.SolrCfg.BaseCfg.MetricsPath = beego.AppConfig.DefaultString("solr_exporter.metrics_path",
+			"/metrics")
+		globalCfg.SolrCfg.BaseCfg.MetricsRouter = beego.AppConfig.DefaultString("solr_exporter.metrics_router",
+			"/bind")
+		globalCfg.SolrCfg.BaseCfg.Timeout = time.Duration(beego.AppConfig.DefaultInt("solr_exporter.timeout",
+			5)) * time.Second
+		filters := strings.Split(beego.AppConfig.DefaultString("solr_exporter.filters", ""),
+			",")
+		var m map[string]string
+		m = make(map[string]string)
+		for _, s := range filters {
+			if len(s) == 0 {
+				continue
+			}
+			m[s] = s
+		}
+		globalCfg.SolrCfg.BaseCfg.Filters = m
+	}
 }
 
 func NodeConfig() Node {
@@ -913,4 +942,8 @@ func BeanstalkdConfig() Beanstalkd {
 
 func BindConfig() Bind {
 	return globalCfg.BindCfg
+}
+
+func SolrConfig() Solr {
+	return globalCfg.SolrCfg
 }

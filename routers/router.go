@@ -160,4 +160,10 @@ func init() {
 		beego.Router(config.BindConfig().BaseCfg.MetricsRouter,
 			&controllers.BindController{}, "get:BindMetrics")
 	}
+
+	// solr exporter
+	if config.SolrConfig().BaseCfg.Enable {
+		beego.Router(config.SolrConfig().BaseCfg.MetricsRouter,
+			&controllers.SolrController{}, "get:SolrMetrics")
+	}
 }

@@ -291,3 +291,13 @@ func (c *BindController) BindMetrics() {
 	r := models.BindMetrics()
 	c.Ctx.Output.Body([]byte(r))
 }
+
+// solr exporter
+type SolrController struct {
+	beego.Controller
+}
+
+func (c *SolrController) SolrMetrics() {
+	r := models.SolrMetrics()
+	c.Ctx.Output.Body([]byte(r))
+}

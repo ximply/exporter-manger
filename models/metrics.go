@@ -434,3 +434,14 @@ func BindMetrics() string {
 
 	return overFilters(rsp.Rsp, config.BindConfig().BaseCfg.Filters)
 }
+
+func SolrMetrics() string {
+	rsp := metricsFromUnixSock(config.SolrConfig().BaseCfg.UnixSockFile,
+		config.SolrConfig().BaseCfg.MetricsPath,
+		config.SolrConfig().BaseCfg.Timeout)
+	if strings.Compare(rsp.Status, "200") != 0 {
+		return ""
+	}
+	
+	return overFilters(rsp.Rsp, config.SolrConfig().BaseCfg.Filters)
+}
