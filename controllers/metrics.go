@@ -301,3 +301,33 @@ func (c *SolrController) SolrMetrics() {
 	r := models.SolrMetrics()
 	c.Ctx.Output.Body([]byte(r))
 }
+
+// hadoop data node exporter
+type HadoopDataNodeController struct {
+	beego.Controller
+}
+
+func (c *HadoopDataNodeController) HadoopDataNodeMetrics() {
+	r := models.HadoopDataNodeMetrics()
+	c.Ctx.Output.Body([]byte(r))
+}
+
+// hadoop name node exporter
+type HadoopNameNodeController struct {
+	beego.Controller
+}
+
+func (c *HadoopNameNodeController) HadoopNameNodeMetrics() {
+	r := models.HadoopNameNodeMetrics()
+	c.Ctx.Output.Body([]byte(r))
+}
+
+// hadoop resource manager exporter
+type HadoopResourceManagerController struct {
+	beego.Controller
+}
+
+func (c *HadoopResourceManagerController) HadoopResourceManagerMetrics() {
+	r := models.HadoopResourceManagerMetrics()
+	c.Ctx.Output.Body([]byte(r))
+}

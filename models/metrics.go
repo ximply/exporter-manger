@@ -445,3 +445,36 @@ func SolrMetrics() string {
 	
 	return overFilters(rsp.Rsp, config.SolrConfig().BaseCfg.Filters)
 }
+
+func HadoopDataNodeMetrics() string {
+	rsp := metricsFromUnixSock(config.HadoopDataNodeConfig().BaseCfg.UnixSockFile,
+		config.HadoopDataNodeConfig().BaseCfg.MetricsPath,
+		config.HadoopDataNodeConfig().BaseCfg.Timeout)
+	if strings.Compare(rsp.Status, "200") != 0 {
+		return ""
+	}
+
+	return overFilters(rsp.Rsp, config.HadoopDataNodeConfig().BaseCfg.Filters)
+}
+
+func HadoopNameNodeMetrics() string {
+	rsp := metricsFromUnixSock(config.HadoopNameNodeConfig().BaseCfg.UnixSockFile,
+		config.HadoopNameNodeConfig().BaseCfg.MetricsPath,
+		config.HadoopNameNodeConfig().BaseCfg.Timeout)
+	if strings.Compare(rsp.Status, "200") != 0 {
+		return ""
+	}
+
+	return overFilters(rsp.Rsp, config.HadoopNameNodeConfig().BaseCfg.Filters)
+}
+
+func HadoopResourceManagerMetrics() string {
+	rsp := metricsFromUnixSock(config.HadoopResourceManagerConfig().BaseCfg.UnixSockFile,
+		config.HadoopResourceManagerConfig().BaseCfg.MetricsPath,
+		config.HadoopResourceManagerConfig().BaseCfg.Timeout)
+	if strings.Compare(rsp.Status, "200") != 0 {
+		return ""
+	}
+
+	return overFilters(rsp.Rsp, config.HadoopResourceManagerConfig().BaseCfg.Filters)
+}

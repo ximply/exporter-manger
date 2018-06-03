@@ -35,6 +35,9 @@ type GlobalConfig struct {
 	BeanstalkdCfg Beanstalkd
 	BindCfg Bind
 	SolrCfg Solr
+	HadoopDataNodeCfg HadoopDataNode
+	HadoopNameNodeCfg HadoopNameNode
+	HadoopResourceManagerCfg HadoopResourceManager
 }
 
 type BaseConfig struct {
@@ -155,6 +158,18 @@ type Bind struct {
 }
 
 type Solr struct {
+	BaseCfg BaseConfig
+}
+
+type HadoopDataNode struct {
+	BaseCfg BaseConfig
+}
+
+type HadoopNameNode struct {
+	BaseCfg BaseConfig
+}
+
+type HadoopResourceManager struct {
 	BaseCfg BaseConfig
 }
 
@@ -834,6 +849,78 @@ func Init() {
 		}
 		globalCfg.SolrCfg.BaseCfg.Filters = m
 	}
+
+	// hadoop data node exporter
+	globalCfg.HadoopDataNodeCfg.BaseCfg.Enable = beego.AppConfig.DefaultBool("hadoop_datanode_exporter", false)
+	if HadoopDataNodeConfig().BaseCfg.Enable {
+		globalCfg.HadoopDataNodeCfg.BaseCfg.UnixSockFile = beego.AppConfig.DefaultString("hadoop_datanode_exporter.unix_sock",
+			"/dev/shm/hadoop_datanode_exporter.sock")
+		globalCfg.HadoopDataNodeCfg.BaseCfg.MetricsPath = beego.AppConfig.DefaultString("hadoop_datanode_exporter.metrics_path",
+			"/metrics")
+		globalCfg.HadoopDataNodeCfg.BaseCfg.MetricsRouter = beego.AppConfig.DefaultString("hadoop_datanode_exporter.metrics_router",
+			"/hadoopdn")
+		globalCfg.HadoopDataNodeCfg.BaseCfg.Timeout = time.Duration(beego.AppConfig.DefaultInt("hadoop_datanode_exporter.timeout",
+			5)) * time.Second
+		filters := strings.Split(beego.AppConfig.DefaultString("hadoop_datanode_exporter.filters", ""),
+			",")
+		var m map[string]string
+		m = make(map[string]string)
+		for _, s := range filters {
+			if len(s) == 0 {
+				continue
+			}
+			m[s] = s
+		}
+		globalCfg.HadoopDataNodeCfg.BaseCfg.Filters = m
+	}
+
+	// hadoop name node exporter
+	globalCfg.HadoopNameNodeCfg.BaseCfg.Enable = beego.AppConfig.DefaultBool("hadoop_namenode_exporter", false)
+	if HadoopNameNodeConfig().BaseCfg.Enable {
+		globalCfg.HadoopNameNodeCfg.BaseCfg.UnixSockFile = beego.AppConfig.DefaultString("hadoop_namenode_exporter.unix_sock",
+			"/dev/shm/hadoop_namenode_exporter.sock")
+		globalCfg.HadoopNameNodeCfg.BaseCfg.MetricsPath = beego.AppConfig.DefaultString("hadoop_namenode_exporter.metrics_path",
+			"/metrics")
+		globalCfg.HadoopNameNodeCfg.BaseCfg.MetricsRouter = beego.AppConfig.DefaultString("hadoop_namenode_exporter.metrics_router",
+			"/hadoopnn")
+		globalCfg.HadoopNameNodeCfg.BaseCfg.Timeout = time.Duration(beego.AppConfig.DefaultInt("hadoop_namenode_exporter.timeout",
+			5)) * time.Second
+		filters := strings.Split(beego.AppConfig.DefaultString("hadoop_namenode_exporter.filters", ""),
+			",")
+		var m map[string]string
+		m = make(map[string]string)
+		for _, s := range filters {
+			if len(s) == 0 {
+				continue
+			}
+			m[s] = s
+		}
+		globalCfg.HadoopNameNodeCfg.BaseCfg.Filters = m
+	}
+
+	// hadoop resource manager exporter
+	globalCfg.HadoopResourceManagerCfg.BaseCfg.Enable = beego.AppConfig.DefaultBool("hadoop_resourcemanager_exporter", false)
+	if HadoopResourceManagerConfig().BaseCfg.Enable {
+		globalCfg.HadoopResourceManagerCfg.BaseCfg.UnixSockFile = beego.AppConfig.DefaultString("hadoop_resourcemanager_exporter.unix_sock",
+			"/dev/shm/hadoop_resourcemanager_exporter.sock")
+		globalCfg.HadoopResourceManagerCfg.BaseCfg.MetricsPath = beego.AppConfig.DefaultString("hadoop_resourcemanager_exporter.metrics_path",
+			"/metrics")
+		globalCfg.HadoopResourceManagerCfg.BaseCfg.MetricsRouter = beego.AppConfig.DefaultString("hadoop_resourcemanager_exporter.metrics_router",
+			"/hadooprm")
+		globalCfg.HadoopResourceManagerCfg.BaseCfg.Timeout = time.Duration(beego.AppConfig.DefaultInt("hadoop_resourcemanager_exporter.timeout",
+			5)) * time.Second
+		filters := strings.Split(beego.AppConfig.DefaultString("hadoop_resourcemanager_exporter.filters", ""),
+			",")
+		var m map[string]string
+		m = make(map[string]string)
+		for _, s := range filters {
+			if len(s) == 0 {
+				continue
+			}
+			m[s] = s
+		}
+		globalCfg.HadoopResourceManagerCfg.BaseCfg.Filters = m
+	}
 }
 
 func NodeConfig() Node {
@@ -946,4 +1033,16 @@ func BindConfig() Bind {
 
 func SolrConfig() Solr {
 	return globalCfg.SolrCfg
+}
+
+func HadoopDataNodeConfig() HadoopDataNode {
+	return globalCfg.HadoopDataNodeCfg
+}
+
+func HadoopNameNodeConfig() HadoopNameNode {
+	return globalCfg.HadoopNameNodeCfg
+}
+
+func HadoopResourceManagerConfig() HadoopResourceManager {
+	return globalCfg.HadoopResourceManagerCfg
 }

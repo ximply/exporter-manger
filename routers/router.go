@@ -166,4 +166,22 @@ func init() {
 		beego.Router(config.SolrConfig().BaseCfg.MetricsRouter,
 			&controllers.SolrController{}, "get:SolrMetrics")
 	}
+
+	// hadoop data node exporter
+	if config.HadoopDataNodeConfig().BaseCfg.Enable {
+		beego.Router(config.HadoopDataNodeConfig().BaseCfg.MetricsRouter,
+			&controllers.HadoopDataNodeController{}, "get:HadoopDataNodeMetrics")
+	}
+
+	// hadoop name node exporter
+	if config.HadoopNameNodeConfig().BaseCfg.Enable {
+		beego.Router(config.HadoopNameNodeConfig().BaseCfg.MetricsRouter,
+			&controllers.HadoopNameNodeController{}, "get:HadoopNameNodeMetrics")
+	}
+
+	// hadoop resource manager exporter
+	if config.HadoopResourceManagerConfig().BaseCfg.Enable {
+		beego.Router(config.HadoopResourceManagerConfig().BaseCfg.MetricsRouter,
+			&controllers.HadoopResourceManagerController{}, "get:HadoopResourceManagerMetrics")
+	}
 }
