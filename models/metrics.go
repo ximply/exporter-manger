@@ -468,6 +468,17 @@ func HadoopNameNodeMetrics() string {
 	return overFilters(rsp.Rsp, config.HadoopNameNodeConfig().BaseCfg.Filters)
 }
 
+func HadoopSecondNameNodeMetrics() string {
+	rsp := metricsFromUnixSock(config.HadoopSecondNameNodeConfig().BaseCfg.UnixSockFile,
+		config.HadoopSecondNameNodeConfig().BaseCfg.MetricsPath,
+		config.HadoopSecondNameNodeConfig().BaseCfg.Timeout)
+	if strings.Compare(rsp.Status, "200") != 0 {
+		return ""
+	}
+
+	return overFilters(rsp.Rsp, config.HadoopSecondNameNodeConfig().BaseCfg.Filters)
+}
+
 func HadoopResourceManagerMetrics() string {
 	rsp := metricsFromUnixSock(config.HadoopResourceManagerConfig().BaseCfg.UnixSockFile,
 		config.HadoopResourceManagerConfig().BaseCfg.MetricsPath,

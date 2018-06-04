@@ -322,6 +322,16 @@ func (c *HadoopNameNodeController) HadoopNameNodeMetrics() {
 	c.Ctx.Output.Body([]byte(r))
 }
 
+// hadoop second name node exporter
+type HadoopSecondNameNodeController struct {
+	beego.Controller
+}
+
+func (c *HadoopSecondNameNodeController) HadoopSecondNameNodeMetrics() {
+	r := models.HadoopSecondNameNodeMetrics()
+	c.Ctx.Output.Body([]byte(r))
+}
+
 // hadoop resource manager exporter
 type HadoopResourceManagerController struct {
 	beego.Controller

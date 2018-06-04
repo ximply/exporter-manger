@@ -37,6 +37,7 @@ type GlobalConfig struct {
 	SolrCfg Solr
 	HadoopDataNodeCfg HadoopDataNode
 	HadoopNameNodeCfg HadoopNameNode
+	HadoopSecondNameNodeCfg HadoopSecondNameNode
 	HadoopResourceManagerCfg HadoopResourceManager
 }
 
@@ -166,6 +167,10 @@ type HadoopDataNode struct {
 }
 
 type HadoopNameNode struct {
+	BaseCfg BaseConfig
+}
+
+type HadoopSecondNameNode struct {
 	BaseCfg BaseConfig
 }
 
@@ -898,6 +903,30 @@ func Init() {
 		globalCfg.HadoopNameNodeCfg.BaseCfg.Filters = m
 	}
 
+	// hadoop second name node exporter
+	globalCfg.HadoopSecondNameNodeCfg.BaseCfg.Enable = beego.AppConfig.DefaultBool("hadoop_secondnamenode_exporter", false)
+	if HadoopSecondNameNodeConfig().BaseCfg.Enable {
+		globalCfg.HadoopSecondNameNodeCfg.BaseCfg.UnixSockFile = beego.AppConfig.DefaultString("hadoop_secondnamenode_exporter.unix_sock",
+			"/dev/shm/hadoop_secondnamenode_exporter.sock")
+		globalCfg.HadoopSecondNameNodeCfg.BaseCfg.MetricsPath = beego.AppConfig.DefaultString("hadoop_secondnamenode_exporter.metrics_path",
+			"/metrics")
+		globalCfg.HadoopSecondNameNodeCfg.BaseCfg.MetricsRouter = beego.AppConfig.DefaultString("hadoop_secondnamenode_exporter.metrics_router",
+			"/hadoopsnn")
+		globalCfg.HadoopSecondNameNodeCfg.BaseCfg.Timeout = time.Duration(beego.AppConfig.DefaultInt("hadoop_secondnamenode_exporter.timeout",
+			5)) * time.Second
+		filters := strings.Split(beego.AppConfig.DefaultString("hadoop_secondnamenode_exporter.filters", ""),
+			",")
+		var m map[string]string
+		m = make(map[string]string)
+		for _, s := range filters {
+			if len(s) == 0 {
+				continue
+			}
+			m[s] = s
+		}
+		globalCfg.HadoopSecondNameNodeCfg.BaseCfg.Filters = m
+	}
+
 	// hadoop resource manager exporter
 	globalCfg.HadoopResourceManagerCfg.BaseCfg.Enable = beego.AppConfig.DefaultBool("hadoop_resourcemanager_exporter", false)
 	if HadoopResourceManagerConfig().BaseCfg.Enable {
@@ -1041,6 +1070,10 @@ func HadoopDataNodeConfig() HadoopDataNode {
 
 func HadoopNameNodeConfig() HadoopNameNode {
 	return globalCfg.HadoopNameNodeCfg
+}
+
+func HadoopSecondNameNodeConfig() HadoopSecondNameNode {
+	return globalCfg.HadoopSecondNameNodeCfg
 }
 
 func HadoopResourceManagerConfig() HadoopResourceManager {

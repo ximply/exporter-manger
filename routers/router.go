@@ -179,6 +179,12 @@ func init() {
 			&controllers.HadoopNameNodeController{}, "get:HadoopNameNodeMetrics")
 	}
 
+	// hadoop second name node exporter
+	if config.HadoopSecondNameNodeConfig().BaseCfg.Enable {
+		beego.Router(config.HadoopSecondNameNodeConfig().BaseCfg.MetricsRouter,
+			&controllers.HadoopSecondNameNodeController{}, "get:HadoopSecondNameNodeMetrics")
+	}
+
 	// hadoop resource manager exporter
 	if config.HadoopResourceManagerConfig().BaseCfg.Enable {
 		beego.Router(config.HadoopResourceManagerConfig().BaseCfg.MetricsRouter,
