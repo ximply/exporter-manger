@@ -39,6 +39,7 @@ type GlobalConfig struct {
 	HadoopNameNodeCfg HadoopNameNode
 	HadoopSecondNameNodeCfg HadoopSecondNameNode
 	HadoopResourceManagerCfg HadoopResourceManager
+	KafkaCfg Kafka
 }
 
 type BaseConfig struct {
@@ -175,6 +176,10 @@ type HadoopSecondNameNode struct {
 }
 
 type HadoopResourceManager struct {
+	BaseCfg BaseConfig
+}
+
+type Kafka struct {
 	BaseCfg BaseConfig
 }
 
@@ -950,6 +955,30 @@ func Init() {
 		}
 		globalCfg.HadoopResourceManagerCfg.BaseCfg.Filters = m
 	}
+
+	// kafka exporter
+	globalCfg.KafkaCfg.BaseCfg.Enable = beego.AppConfig.DefaultBool("kafka_exporter", false)
+	if KafkaConfig().BaseCfg.Enable {
+		globalCfg.KafkaCfg.BaseCfg.UnixSockFile = beego.AppConfig.DefaultString("kafka_exporter.unix_sock",
+			"/dev/shm/kafka_exporter.sock")
+		globalCfg.KafkaCfg.BaseCfg.MetricsPath = beego.AppConfig.DefaultString("kafka_exporter.metrics_path",
+			"/metrics")
+		globalCfg.KafkaCfg.BaseCfg.MetricsRouter = beego.AppConfig.DefaultString("kafka_exporter.metrics_router",
+			"/kafka")
+		globalCfg.KafkaCfg.BaseCfg.Timeout = time.Duration(beego.AppConfig.DefaultInt("kafka_exporter.timeout",
+			5)) * time.Second
+		filters := strings.Split(beego.AppConfig.DefaultString("kafka_exporter.filters", ""),
+			",")
+		var m map[string]string
+		m = make(map[string]string)
+		for _, s := range filters {
+			if len(s) == 0 {
+				continue
+			}
+			m[s] = s
+		}
+		globalCfg.KafkaCfg.BaseCfg.Filters = m
+	}
 }
 
 func NodeConfig() Node {
@@ -1078,4 +1107,8 @@ func HadoopSecondNameNodeConfig() HadoopSecondNameNode {
 
 func HadoopResourceManagerConfig() HadoopResourceManager {
 	return globalCfg.HadoopResourceManagerCfg
+}
+
+func KafkaConfig() Kafka {
+	return globalCfg.KafkaCfg
 }

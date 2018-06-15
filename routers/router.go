@@ -190,4 +190,10 @@ func init() {
 		beego.Router(config.HadoopResourceManagerConfig().BaseCfg.MetricsRouter,
 			&controllers.HadoopResourceManagerController{}, "get:HadoopResourceManagerMetrics")
 	}
+
+	// kafka exporter
+	if config.KafkaConfig().BaseCfg.Enable {
+		beego.Router(config.KafkaConfig().BaseCfg.MetricsRouter,
+			&controllers.KafkaController{}, "get:KafkaMetrics")
+	}
 }

@@ -489,3 +489,14 @@ func HadoopResourceManagerMetrics() string {
 
 	return overFilters(rsp.Rsp, config.HadoopResourceManagerConfig().BaseCfg.Filters)
 }
+
+func KafkaMetrics() string {
+	rsp := metricsFromUnixSock(config.KafkaConfig().BaseCfg.UnixSockFile,
+		config.KafkaConfig().BaseCfg.MetricsPath,
+		config.KafkaConfig().BaseCfg.Timeout)
+	if strings.Compare(rsp.Status, "200") != 0 {
+		return ""
+	}
+
+	return overFilters(rsp.Rsp, config.KafkaConfig().BaseCfg.Filters)
+}

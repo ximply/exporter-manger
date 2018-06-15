@@ -341,3 +341,13 @@ func (c *HadoopResourceManagerController) HadoopResourceManagerMetrics() {
 	r := models.HadoopResourceManagerMetrics()
 	c.Ctx.Output.Body([]byte(r))
 }
+
+// kafka exporter
+type KafkaController struct {
+	beego.Controller
+}
+
+func (c *KafkaController) KafkaMetrics() {
+	r := models.KafkaMetrics()
+	c.Ctx.Output.Body([]byte(r))
+}
