@@ -11,6 +11,7 @@ import (
 	"context"
 	"time"
 	"sync"
+	"runtime"
 )
 
 type UnixResponse struct {
@@ -24,9 +25,11 @@ type JavaInfoItem struct {
 }
 var g_javaInfoLock sync.RWMutex
 var g_javInfo map[string]*JavaInfoItem
+var g_numCpuCores float64
 
 func Init() {
 	g_javInfo = make(map[string]*JavaInfoItem)
+    g_numCpuCores = float64(runtime.NumCPU())
 }
 
 func existsMetric(metric string, filters map[string]string) bool {
@@ -105,7 +108,7 @@ func NodeMetrics() string {
 	if strings.Compare(rsp.Status, "200") != 0 {
 		return ""
 	}
-
+	rsp.Rsp = fmt.Sprintf("node_num_cpu_cores %g\n", g_numCpuCores) + rsp.Rsp
 	return overFilters(rsp.Rsp, config.NodeConfig().BaseCfg.Filters)
 }
 
