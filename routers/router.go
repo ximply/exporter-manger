@@ -199,7 +199,7 @@ func init() {
 
 	// zookeeper exporter
 	if config.ZookeeperConfig().BaseCfg.Enable {
-		beego.Router(config.KafkaConfig().BaseCfg.MetricsRouter,
-			&controllers.KafkaController{}, "get:ZookeeperMetrics")
+		beego.Router(config.ZookeeperConfig().BaseCfg.MetricsRouter,
+			&controllers.ZookeeperController{}, "get:ZookeeperMetrics")
 	}
 }
