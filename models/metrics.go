@@ -503,3 +503,14 @@ func KafkaMetrics() string {
 
 	return overFilters(rsp.Rsp, config.KafkaConfig().BaseCfg.Filters)
 }
+
+func ZookeeperMetrics() string {
+	rsp := metricsFromUnixSock(config.ZookeeperConfig().BaseCfg.UnixSockFile,
+		config.ZookeeperConfig().BaseCfg.MetricsPath,
+		config.ZookeeperConfig().BaseCfg.Timeout)
+	if strings.Compare(rsp.Status, "200") != 0 {
+		return ""
+	}
+
+	return overFilters(rsp.Rsp, config.ZookeeperConfig().BaseCfg.Filters)
+}

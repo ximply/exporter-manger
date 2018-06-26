@@ -351,3 +351,13 @@ func (c *KafkaController) KafkaMetrics() {
 	r := models.KafkaMetrics()
 	c.Ctx.Output.Body([]byte(r))
 }
+
+// kafka exporter
+type ZookeeperController struct {
+	beego.Controller
+}
+
+func (c *ZookeeperController) ZookeeperMetrics() {
+	r := models.ZookeeperMetrics()
+	c.Ctx.Output.Body([]byte(r))
+}

@@ -196,4 +196,10 @@ func init() {
 		beego.Router(config.KafkaConfig().BaseCfg.MetricsRouter,
 			&controllers.KafkaController{}, "get:KafkaMetrics")
 	}
+
+	// zookeeper exporter
+	if config.ZookeeperConfig().BaseCfg.Enable {
+		beego.Router(config.KafkaConfig().BaseCfg.MetricsRouter,
+			&controllers.KafkaController{}, "get:ZookeeperMetrics")
+	}
 }
