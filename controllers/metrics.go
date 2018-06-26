@@ -352,7 +352,7 @@ func (c *KafkaController) KafkaMetrics() {
 	c.Ctx.Output.Body([]byte(r))
 }
 
-// kafka exporter
+// zookeeper exporter
 type ZookeeperController struct {
 	beego.Controller
 }
