@@ -6,6 +6,16 @@ import (
 	"io/ioutil"
 )
 
+// company conn
+type CompanyConnController struct {
+	beego.Controller
+}
+
+func (c *CompanyConnController) CompanyConnMetrics() {
+	r := models.CompanyConnMetrics()
+	c.Ctx.Output.Body([]byte(r))
+}
+
 // node exporter
 type NodeController struct {
 	beego.Controller

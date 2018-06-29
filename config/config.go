@@ -41,6 +41,7 @@ type GlobalConfig struct {
 	HadoopResourceManagerCfg HadoopResourceManager
 	KafkaCfg Kafka
 	ZookeeperCfg Zookeeper
+	CompanyConnCfg CompanyConn
 }
 
 type BaseConfig struct {
@@ -50,6 +51,10 @@ type BaseConfig struct {
 	MetricsRouter string
 	Timeout time.Duration
 	Filters map[string]string
+}
+
+type CompanyConn struct {
+	BaseCfg BaseConfig
 }
 
 type Node struct {
@@ -191,6 +196,32 @@ type Zookeeper struct {
 var globalCfg GlobalConfig
 
 func Init() {
+	// company_conn
+	globalCfg.CompanyConnCfg.BaseCfg.Enable = beego.AppConfig.DefaultBool("company_conn", false)
+	if CompanyConnConfig().BaseCfg.Enable {
+		globalCfg.CompanyConnCfg.BaseCfg.UnixSockFile = beego.AppConfig.DefaultString("company_conn.unix_sock",
+			"/dev/shm/companyconn.sock")
+		globalCfg.CompanyConnCfg.BaseCfg.MetricsPath = beego.AppConfig.DefaultString("company_conn.metrics_path",
+			"/metrics")
+		globalCfg.CompanyConnCfg.BaseCfg.MetricsRouter = beego.AppConfig.DefaultString("company_conn.metrics_router",
+			"/companyconn")
+		globalCfg.CompanyConnCfg.BaseCfg.Timeout = time.Duration(beego.AppConfig.DefaultInt("company_conn.timeout",
+			5)) * time.Second
+		filters := strings.Split(beego.AppConfig.DefaultString("company_conn.filters", ""),
+			",")
+		if len(filters) > 0 {
+			var m map[string]string
+			m = make(map[string]string)
+			for _, s := range filters {
+				if len(s) == 0 {
+					continue
+				}
+				m[s] = s
+			}
+			globalCfg.CompanyConnCfg.BaseCfg.Filters = m
+		}
+	}
+
 	// node exporter
 	globalCfg.NodeCfg.BaseCfg.Enable = beego.AppConfig.DefaultBool("node_exporter", false)
 	if NodeConfig().BaseCfg.Enable {
@@ -1008,6 +1039,10 @@ func Init() {
 		}
 		globalCfg.ZookeeperCfg.BaseCfg.Filters = m
 	}
+}
+
+func CompanyConnConfig() CompanyConn {
+	return globalCfg.CompanyConnCfg
 }
 
 func NodeConfig() Node {
