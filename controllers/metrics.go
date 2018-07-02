@@ -6,6 +6,16 @@ import (
 	"io/ioutil"
 )
 
+// company info
+type CompanyInfoController struct {
+	beego.Controller
+}
+
+func (c *CompanyInfoController) CompanyInfoMetrics() {
+	r := models.CompanyInfoMetrics()
+	c.Ctx.Output.Body([]byte(r))
+}
+
 // company heartbeat
 type CompanyHbController struct {
 	beego.Controller
