@@ -101,6 +101,17 @@ func metricsFromUnixSock(unixSockFile string, metricsPath string, timeout time.D
 	return rsp
 }
 
+func CompanyMetrics() string {
+	rsp := metricsFromUnixSock(config.CompanyConfig().BaseCfg.UnixSockFile,
+		config.CompanyConfig().BaseCfg.MetricsPath,
+		config.CompanyConfig().BaseCfg.Timeout)
+	if strings.Compare(rsp.Status, "200") != 0 {
+		return ""
+	}
+
+	return overFilters(rsp.Rsp, config.CompanyConfig().BaseCfg.Filters)
+}
+
 func CompanyInfoMetrics() string {
 	rsp := metricsFromUnixSock(config.CompanyInfoConfig().BaseCfg.UnixSockFile,
 		config.CompanyInfoConfig().BaseCfg.MetricsPath,

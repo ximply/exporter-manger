@@ -9,6 +9,11 @@ import (
 func init() {
     config.Init()
     beego.Router("/", &controllers.MainController{})
+	// company
+	if config.CompanyConfig().BaseCfg.Enable {
+		beego.Router(config.CompanyConfig().BaseCfg.MetricsRouter,
+			&controllers.CompanyController{}, "get:CompanyMetrics")
+	}
 	// company info
 	if config.CompanyInfoConfig().BaseCfg.Enable {
 		beego.Router(config.CompanyInfoConfig().BaseCfg.MetricsRouter,

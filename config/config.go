@@ -44,6 +44,7 @@ type GlobalConfig struct {
 	CompanyConnCfg CompanyConn
 	CompanyHbCfg CompanyHb
 	CompanyInfoCfg CompanyInfo
+	CompanyCfg Company
 }
 
 type BaseConfig struct {
@@ -53,6 +54,10 @@ type BaseConfig struct {
 	MetricsRouter string
 	Timeout time.Duration
 	Filters map[string]string
+}
+
+type Company struct {
+	BaseCfg BaseConfig
 }
 
 type CompanyInfo struct {
@@ -206,6 +211,32 @@ type Zookeeper struct {
 var globalCfg GlobalConfig
 
 func Init() {
+	// company
+	globalCfg.CompanyCfg.BaseCfg.Enable = beego.AppConfig.DefaultBool("company_exporter", false)
+	if CompanyConfig().BaseCfg.Enable {
+		globalCfg.CompanyCfg.BaseCfg.UnixSockFile = beego.AppConfig.DefaultString("company_exporter.unix_sock",
+			"/dev/shm/company_exporter.sock")
+		globalCfg.CompanyCfg.BaseCfg.MetricsPath = beego.AppConfig.DefaultString("company_exporter.metrics_path",
+			"/metrics")
+		globalCfg.CompanyCfg.BaseCfg.MetricsRouter = beego.AppConfig.DefaultString("company_exporter.metrics_router",
+			"/company")
+		globalCfg.CompanyCfg.BaseCfg.Timeout = time.Duration(beego.AppConfig.DefaultInt("company_exporter.timeout",
+			5)) * time.Second
+		filters := strings.Split(beego.AppConfig.DefaultString("company_exporter.filters", ""),
+			",")
+		if len(filters) > 0 {
+			var m map[string]string
+			m = make(map[string]string)
+			for _, s := range filters {
+				if len(s) == 0 {
+					continue
+				}
+				m[s] = s
+			}
+			globalCfg.CompanyCfg.BaseCfg.Filters = m
+		}
+	}
+
 	// company_info
 	globalCfg.CompanyInfoCfg.BaseCfg.Enable = beego.AppConfig.DefaultBool("company_info", false)
 	if CompanyInfoConfig().BaseCfg.Enable {
@@ -1101,6 +1132,10 @@ func Init() {
 		}
 		globalCfg.ZookeeperCfg.BaseCfg.Filters = m
 	}
+}
+
+func CompanyConfig() Company {
+	return globalCfg.CompanyCfg
 }
 
 func CompanyInfoConfig() CompanyInfo {
