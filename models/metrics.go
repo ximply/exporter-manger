@@ -123,6 +123,17 @@ func CompanyInfoMetrics() string {
 	return overFilters(rsp.Rsp, config.CompanyInfoConfig().BaseCfg.Filters)
 }
 
+func CompanyInfoJsonMetrics() string {
+	rsp := metricsFromUnixSock(config.CompanyInfoConfig().BaseCfg.UnixSockFile,
+		"/json",
+		config.CompanyInfoConfig().BaseCfg.Timeout)
+	if strings.Compare(rsp.Status, "200") != 0 {
+		return ""
+	}
+
+	return rsp.Rsp
+}
+
 func CompanyHbMetrics() string {
 	rsp := metricsFromUnixSock(config.CompanyHbConfig().BaseCfg.UnixSockFile,
 		config.CompanyHbConfig().BaseCfg.MetricsPath,

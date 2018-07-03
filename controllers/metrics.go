@@ -26,6 +26,15 @@ func (c *CompanyInfoController) CompanyInfoMetrics() {
 	c.Ctx.Output.Body([]byte(r))
 }
 
+type CompanyInfoJsonController struct {
+	beego.Controller
+}
+
+func (c *CompanyInfoJsonController) CompanyInfoJsonMetrics() {
+	r := models.CompanyInfoJsonMetrics()
+	c.Ctx.Output.Body([]byte(r))
+}
+
 // company heartbeat
 type CompanyHbController struct {
 	beego.Controller
