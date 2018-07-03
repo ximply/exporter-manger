@@ -124,9 +124,9 @@ func CompanyInfoMetrics() string {
 }
 
 func CompanyInfoJsonMetrics() string {
-	rsp := metricsFromUnixSock(config.CompanyInfoConfig().BaseCfg.UnixSockFile,
+	rsp := metricsFromUnixSock(config.CompanyConfig().BaseCfg.UnixSockFile,
 		"/json",
-		config.CompanyInfoConfig().BaseCfg.Timeout)
+		config.CompanyConfig().BaseCfg.Timeout)
 	if strings.Compare(rsp.Status, "200") != 0 {
 		return ""
 	}

@@ -14,14 +14,14 @@ func init() {
 		beego.Router(config.CompanyConfig().BaseCfg.MetricsRouter,
 			&controllers.CompanyController{}, "get:CompanyMetrics")
 	}
+	if config.CompanyConfig().BaseCfg.Enable {
+		beego.Router("/companyinfojson",
+			&controllers.CompanyInfoJsonController{}, "get:CompanyInfoJsonMetrics")
+	}
 	// company info
 	if config.CompanyInfoConfig().BaseCfg.Enable {
 		beego.Router(config.CompanyInfoConfig().BaseCfg.MetricsRouter,
 			&controllers.CompanyInfoController{}, "get:CompanyInfoMetrics")
-	}
-	if config.CompanyInfoConfig().BaseCfg.Enable {
-		beego.Router("/companyinfojson",
-			&controllers.CompanyInfoJsonController{}, "get:CompanyInfoJsonMetrics")
 	}
 	// company heartbeat
 	if config.CompanyHbConfig().BaseCfg.Enable {
