@@ -310,8 +310,8 @@ type JavaInfoController struct {
 }
 
 func (c *JavaInfoController) JavaInfo() {
-	body, _ := ioutil.ReadAll(c.Ctx.Request.Body)
-	bodyStr := string(body)
+	//body, _ := ioutil.ReadAll(c.Ctx.Request.Body)
+	bodyStr := string(c.Ctx.Input.RequestBody)
     models.JavaInfo(bodyStr)
 
 	out := make(map[string]interface{})
