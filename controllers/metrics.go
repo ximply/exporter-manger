@@ -3,9 +3,19 @@ package controllers
 import (
 	"github.com/astaxie/beego"
 	"github.com/ximply/exporter-manger/models"
-	"io/ioutil"
 	"strings"
+	"github.com/astaxie/beego/context"
 )
+
+// response to prometheus
+func response(r string, ctx *context.Context) {
+	if strings.Contains(r, "_") || strings.Contains(r, "{") {
+		ctx.Output.Body([]byte(r))
+		return
+	}
+	ctx.Output.SetStatus(502)
+	ctx.Output.Body([]byte(``))
+}
 
 // company
 type CompanyController struct {
@@ -62,8 +72,7 @@ type NodeController struct {
 }
 
 func (c *NodeController) NodeMetrics() {
-	r := models.NodeMetrics()
-	c.Ctx.Output.Body([]byte(r))
+	response(models.NodeMetrics(), c.Ctx)
 }
 
 // nginx exporter
@@ -72,8 +81,7 @@ type NginxController struct {
 }
 
 func (c *NginxController) NginxMetrics() {
-	r := models.NginxMetrics()
-	c.Ctx.Output.Body([]byte(r))
+	response(models.NginxMetrics(), c.Ctx)
 }
 
 // nginx vts exporter
@@ -82,8 +90,7 @@ type NginxVtsController struct {
 }
 
 func (c *NginxVtsController) NginxVtsMetrics() {
-	r := models.NginxVtsMetrics()
-	c.Ctx.Output.Body([]byte(r))
+	response(models.NginxVtsMetrics(), c.Ctx)
 }
 
 // php-fpm exporter
@@ -92,8 +99,7 @@ type PhpfpmController struct {
 }
 
 func (c *PhpfpmController) PhpfpmMetrics() {
-	r := models.PhpfpmMetrics()
-	c.Ctx.Output.Body([]byte(r))
+	response(models.PhpfpmMetrics(), c.Ctx)
 }
 
 // redis exporter
@@ -102,8 +108,7 @@ type RedisController struct {
 }
 
 func (c *RedisController) RedisMetrics() {
-	r := models.RedisMetrics()
-	c.Ctx.Output.Body([]byte(r))
+	response(models.RedisMetrics(), c.Ctx)
 }
 
 // memcached exporter
@@ -112,8 +117,7 @@ type MemchachedController struct {
 }
 
 func (c *MemchachedController) MemcachedMetrics() {
-	r := models.MemcachedMetrics()
-	c.Ctx.Output.Body([]byte(r))
+	response(models.MemcachedMetrics(), c.Ctx)
 }
 
 // mysqld exporter
@@ -122,8 +126,7 @@ type MysqldController struct {
 }
 
 func (c *MysqldController) MysqldMetrics() {
-	r := models.MysqldMetrics()
-	c.Ctx.Output.Body([]byte(r))
+	response(models.MysqldMetrics(), c.Ctx)
 }
 
 // multi mysqld exporter
@@ -132,8 +135,7 @@ type MultiMysqldController struct {
 }
 
 func (c *MultiMysqldController) MultiMysqldMetrics() {
-	r := models.MultiMysqldMetrics()
-	c.Ctx.Output.Body([]byte(r))
+	response(models.MultiMysqldMetrics(), c.Ctx)
 }
 
 // haproxy exporter
@@ -142,8 +144,7 @@ type HaproxyController struct {
 }
 
 func (c *HaproxyController) HaproxyMetrics() {
-	r := models.HaproxyMetrics()
-	c.Ctx.Output.Body([]byte(r))
+	response(models.HaproxyMetrics(), c.Ctx)
 }
 
 // gearman exporter
@@ -152,8 +153,7 @@ type GearmanController struct {
 }
 
 func (c *GearmanController) GearmanMetrics() {
-	r := models.GearmanMetrics()
-	c.Ctx.Output.Body([]byte(r))
+	response(models.GearmanMetrics(), c.Ctx)
 }
 
 // mongodb exporter
@@ -162,8 +162,7 @@ type MongodbController struct {
 }
 
 func (c *MongodbController) MongodbMetrics() {
-	r := models.MongodbMetrics()
-	c.Ctx.Output.Body([]byte(r))
+	response(models.MongodbMetrics(), c.Ctx)
 }
 
 // dellhardware exporter
@@ -172,8 +171,7 @@ type DellHardwareController struct {
 }
 
 func (c *DellHardwareController) DellHardwareMetrics() {
-	r := models.DellHardwareMetrics()
-	c.Ctx.Output.Body([]byte(r))
+	response(models.DellHardwareMetrics(), c.Ctx)
 }
 
 // xenserver exporter
@@ -182,8 +180,7 @@ type XenserverController struct {
 }
 
 func (c *XenserverController) XenserverMetrics() {
-	r := models.XenserverMetrics()
-	c.Ctx.Output.Body([]byte(r))
+	response(models.XenserverMetrics(), c.Ctx)
 }
 
 // elasticsearch exporter
@@ -192,8 +189,7 @@ type ElasticsearchController struct {
 }
 
 func (c *ElasticsearchController) ElasticsearchMetrics() {
-	r := models.ElasticsearchMetrics()
-	c.Ctx.Output.Body([]byte(r))
+	response(models.ElasticsearchMetrics(), c.Ctx)
 }
 
 // logstash exporter
@@ -202,8 +198,7 @@ type LogstashController struct {
 }
 
 func (c *LogstashController) LogstashMetrics() {
-	r := models.LogstashMetrics()
-	c.Ctx.Output.Body([]byte(r))
+	response(models.LogstashMetrics(), c.Ctx)
 }
 
 // multi logstash exporter
@@ -212,8 +207,7 @@ type MultiLogstashController struct {
 }
 
 func (c *MultiLogstashController) MultiLogstashMetrics() {
-	r := models.MultiLogstashMetrics()
-	c.Ctx.Output.Body([]byte(r))
+	response(models.MultiLogstashMetrics(), c.Ctx)
 }
 
 // ping exporter
@@ -222,8 +216,7 @@ type PingController struct {
 }
 
 func (c *PingController) PingMetrics() {
-	r := models.PingMetrics()
-	c.Ctx.Output.Body([]byte(r))
+	response(models.PingMetrics(), c.Ctx)
 }
 
 // tcp ping exporter
@@ -232,8 +225,7 @@ type TcpPingController struct {
 }
 
 func (c *TcpPingController) TcpPingMetrics() {
-	r := models.TcpPingMetrics()
-	c.Ctx.Output.Body([]byte(r))
+	response(models.TcpPingMetrics(), c.Ctx)
 }
 
 // httpstat exporter
@@ -242,8 +234,7 @@ type HttpStatController struct {
 }
 
 func (c *HttpStatController) HttpStatMetrics() {
-	r := models.HttpStatMetrics()
-	c.Ctx.Output.Body([]byte(r))
+	response(models.HttpStatMetrics(), c.Ctx)
 }
 
 // ping domain exporter
@@ -252,8 +243,7 @@ type PingDomainController struct {
 }
 
 func (c *PingDomainController) PingDomainMetrics() {
-	r := models.PingDomainMetrics()
-	c.Ctx.Output.Body([]byte(r))
+	response(models.PingDomainMetrics(), c.Ctx)
 }
 
 // certwacher exporter
@@ -262,8 +252,7 @@ type CertwacherController struct {
 }
 
 func (c *CertwacherController) CertwacherMetrics() {
-	r := models.CertwacherMetrics()
-	c.Ctx.Output.Body([]byte(r))
+	response(models.CertwacherMetrics(), c.Ctx)
 }
 
 // alive exporter
@@ -272,8 +261,7 @@ type AliveController struct {
 }
 
 func (c *AliveController) AliveMetrics() {
-	r := models.AliveMetrics()
-	c.Ctx.Output.Body([]byte(r))
+	response(models.AliveMetrics(), c.Ctx)
 }
 
 // rabbitmq exporter
@@ -282,8 +270,7 @@ type RabbitmqController struct {
 }
 
 func (c *RabbitmqController) RabbitmqMetrics() {
-	r := models.RabbitmqMetrics()
-	c.Ctx.Output.Body([]byte(r))
+	response(models.RabbitmqMetrics(), c.Ctx)
 }
 
 // supervisor exporter
@@ -292,8 +279,7 @@ type SupervisorController struct {
 }
 
 func (c *SupervisorController) SupervisorMetrics() {
-	r := models.SupervisorMetrics()
-	c.Ctx.Output.Body([]byte(r))
+	response(models.SupervisorMetrics(), c.Ctx)
 }
 
 // java exporter
@@ -302,13 +288,7 @@ type JavaController struct {
 }
 
 func (c *JavaController) JavaMetrics() {
-	r := models.JavaMetrics()
-	if !strings.Contains(r, "java") {
-		c.Ctx.Output.SetStatus(502)
-		c.Ctx.Output.Body([]byte(``))
-		return
-	}
-	c.Ctx.Output.Body([]byte(r))
+	response(models.JavaMetrics(), c.Ctx)
 }
 
 type JavaInfoController struct {
@@ -333,8 +313,7 @@ type BeanstalkdController struct {
 }
 
 func (c *BeanstalkdController) BeanstalkdMetrics() {
-	r := models.BeanstalkdMetrics()
-	c.Ctx.Output.Body([]byte(r))
+	response(models.BeanstalkdMetrics(), c.Ctx)
 }
 
 // bind exporter
@@ -343,8 +322,7 @@ type BindController struct {
 }
 
 func (c *BindController) BindMetrics() {
-	r := models.BindMetrics()
-	c.Ctx.Output.Body([]byte(r))
+	response(models.BindMetrics(), c.Ctx)
 }
 
 // solr exporter
@@ -353,8 +331,7 @@ type SolrController struct {
 }
 
 func (c *SolrController) SolrMetrics() {
-	r := models.SolrMetrics()
-	c.Ctx.Output.Body([]byte(r))
+	response(models.SolrMetrics(), c.Ctx)
 }
 
 // hadoop data node exporter
@@ -363,8 +340,7 @@ type HadoopDataNodeController struct {
 }
 
 func (c *HadoopDataNodeController) HadoopDataNodeMetrics() {
-	r := models.HadoopDataNodeMetrics()
-	c.Ctx.Output.Body([]byte(r))
+	response(models.HadoopDataNodeMetrics(), c.Ctx)
 }
 
 // hadoop name node exporter
@@ -373,8 +349,7 @@ type HadoopNameNodeController struct {
 }
 
 func (c *HadoopNameNodeController) HadoopNameNodeMetrics() {
-	r := models.HadoopNameNodeMetrics()
-	c.Ctx.Output.Body([]byte(r))
+	response(models.HadoopNameNodeMetrics(), c.Ctx)
 }
 
 // hadoop second name node exporter
@@ -383,8 +358,7 @@ type HadoopSecondNameNodeController struct {
 }
 
 func (c *HadoopSecondNameNodeController) HadoopSecondNameNodeMetrics() {
-	r := models.HadoopSecondNameNodeMetrics()
-	c.Ctx.Output.Body([]byte(r))
+	response(models.HadoopSecondNameNodeMetrics(), c.Ctx)
 }
 
 // hadoop resource manager exporter
@@ -393,8 +367,7 @@ type HadoopResourceManagerController struct {
 }
 
 func (c *HadoopResourceManagerController) HadoopResourceManagerMetrics() {
-	r := models.HadoopResourceManagerMetrics()
-	c.Ctx.Output.Body([]byte(r))
+	response(models.HadoopResourceManagerMetrics(), c.Ctx)
 }
 
 // kafka exporter
@@ -403,8 +376,7 @@ type KafkaController struct {
 }
 
 func (c *KafkaController) KafkaMetrics() {
-	r := models.KafkaMetrics()
-	c.Ctx.Output.Body([]byte(r))
+	response(models.KafkaMetrics(), c.Ctx)
 }
 
 // zookeeper exporter
@@ -413,6 +385,5 @@ type ZookeeperController struct {
 }
 
 func (c *ZookeeperController) ZookeeperMetrics() {
-	r := models.ZookeeperMetrics()
-	c.Ctx.Output.Body([]byte(r))
+	response(models.ZookeeperMetrics(), c.Ctx)
 }
