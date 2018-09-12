@@ -4,6 +4,7 @@ import (
 	"github.com/astaxie/beego"
 	"github.com/ximply/exporter-manger/models"
 	"io/ioutil"
+	"strings"
 )
 
 // company
@@ -302,6 +303,11 @@ type JavaController struct {
 
 func (c *JavaController) JavaMetrics() {
 	r := models.JavaMetrics()
+	if !strings.Contains(r, "java") {
+		c.Ctx.Output.SetStatus(502)
+		c.Ctx.Output.Body([]byte(``))
+		return
+	}
 	c.Ctx.Output.Body([]byte(r))
 }
 
