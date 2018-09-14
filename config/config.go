@@ -156,8 +156,14 @@ type Certwacher struct {
 	BaseCfg BaseConfig
 }
 
+type AliveCheckItem struct {
+	ProcessName string
+	Alias string
+	KeyList []string
+}
 type Alive struct {
 	BaseCfg BaseConfig
+	Checks []AliveCheckItem
 }
 
 type Rabbitmq struct {
@@ -847,6 +853,22 @@ func Init() {
 			m[s] = s
 		}
 		globalCfg.AliveCfg.BaseCfg.Filters = m
+
+		chksString := beego.AppConfig.DefaultString("alive_exporter.checks", "")
+		chksString = strings.Replace(chksString, " ", "", -1)
+		chksList := strings.Split(chksString, ";")
+		for _, i := range chksList {
+			s := strings.Split(i, ",")
+			if len(s) != 3 {
+				continue
+			}
+			checkItem := AliveCheckItem{
+				ProcessName:s[0],
+				Alias:s[1],
+				KeyList:strings.Split(s[2], "|"),
+			}
+			globalCfg.AliveCfg.Checks = append(globalCfg.AliveCfg.Checks, checkItem)
+		}
 	}
 
 	// rabbitmq exporter

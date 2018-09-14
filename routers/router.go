@@ -9,6 +9,10 @@ import (
 func init() {
     config.Init()
     beego.Router("/", &controllers.MainController{})
+    // heartbeat
+	beego.Router("/heartbeat",
+		&controllers.HeartbeatController{}, "get:Heartbeat")
+
 	// company
 	if config.CompanyConfig().BaseCfg.Enable {
 		beego.Router(config.CompanyConfig().BaseCfg.MetricsRouter,

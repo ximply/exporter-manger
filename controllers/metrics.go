@@ -3,8 +3,11 @@ package controllers
 import (
 	"github.com/astaxie/beego"
 	"github.com/ximply/exporter-manger/models"
+	"github.com/ximply/exporter-manger/config"
 	"strings"
 	"github.com/astaxie/beego/context"
+	"fmt"
+	"regexp"
 )
 
 // response to prometheus
@@ -64,6 +67,15 @@ type CompanyConnController struct {
 func (c *CompanyConnController) CompanyConnMetrics() {
 	r := models.CompanyConnMetrics()
 	c.Ctx.Output.Body([]byte(r))
+}
+
+// heartbeat
+type HeartbeatController struct {
+	beego.Controller
+}
+
+func (c *HeartbeatController) Heartbeat() {
+	c.Ctx.Output.Body([]byte("heartbeat 1\n"))
 }
 
 // node exporter
@@ -261,7 +273,71 @@ type AliveController struct {
 }
 
 func (c *AliveController) AliveMetrics() {
-	response(models.AliveMetrics(), c.Ctx)
+	r := models.AliveMetrics()
+	chkSize := len(config.AliveConfig().Checks)
+	if strings.Contains(r, "_") || strings.Contains(r, "{") {
+		if chkSize == 0 {
+			c.Ctx.Output.Body([]byte("alive_up 1\n"))
+			return
+		}
+
+		l := strings.Split(r, "\n")
+		ret := ""
+		p := regexp.MustCompile(`\"([^\"]*)\"`)
+		//fmt.Println(p.FindAllString(`alive{type="process",pname="expmgr",pargs="null"} 1`, -1))
+		checks := config.AliveConfig().Checks
+		for _, c := range checks {
+			pRetArgs := ""
+			alive := false
+			for _, i := range l {
+				if !strings.HasPrefix(i, `alive{type="process"`) {
+					continue
+				}
+				pl := p.FindAllString(i, -1)
+				if len(pl) != 3 {
+					continue
+				}
+				pName := pl[1]
+				pName = strings.Replace(pName, "\"", "", -1)
+				pArgs := pl[2]
+				// check process name
+				if strings.Compare(pName, c.ProcessName) != 0 {
+					continue
+				}
+				alive = true
+				// check args
+				for _, arg := range c.KeyList {
+					if !strings.Contains(pArgs, arg) {
+						alive = false
+						break
+					}
+				}
+				keyListSize := len(c.KeyList)
+				if keyListSize == 0 {
+					alive = true
+				}
+
+				if !alive {
+					continue
+				}
+
+				pRetArgs = pArgs
+			}
+
+			if alive {
+				ret += fmt.Sprintf("alive{type=\"process\",pname=\"%s\",pargs=%s,alias=\"%s\"} 1\n",
+					c.ProcessName, pRetArgs, c.Alias)
+			} else {
+				ret += fmt.Sprintf("alive{type=\"process\",pname=\"%s\",pargs=\"%s\",alias=\"%s\"} 0\n",
+					c.ProcessName, "null", c.Alias)
+			}
+		}
+		ret += "alive_up 1\n"
+		c.Ctx.Output.Body([]byte(ret))
+		return
+	}
+
+	c.Ctx.Output.Body([]byte("alive_up 0\n"))
 }
 
 // rabbitmq exporter
