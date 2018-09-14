@@ -3,11 +3,16 @@ package controllers
 import (
 	"github.com/astaxie/beego"
 	"github.com/ximply/exporter-manger/models"
+<<<<<<< HEAD
 	"github.com/ximply/exporter-manger/config"
 	"strings"
 	"github.com/astaxie/beego/context"
 	"fmt"
 	"regexp"
+=======
+	"io/ioutil"
+	"strings"
+>>>>>>> 2479a3b075081ee78e98df98a063aee8ee2b526b
 )
 
 // response to prometheus
@@ -364,7 +369,17 @@ type JavaController struct {
 }
 
 func (c *JavaController) JavaMetrics() {
+<<<<<<< HEAD
 	response(models.JavaMetrics(), c.Ctx)
+=======
+	r := models.JavaMetrics()
+	if !strings.Contains(r, "java") {
+		c.Ctx.Output.SetStatus(502)
+		c.Ctx.Output.Body([]byte(``))
+		return
+	}	
+	c.Ctx.Output.Body([]byte(r))
+>>>>>>> 2479a3b075081ee78e98df98a063aee8ee2b526b
 }
 
 type JavaInfoController struct {
@@ -461,5 +476,11 @@ type ZookeeperController struct {
 }
 
 func (c *ZookeeperController) ZookeeperMetrics() {
+<<<<<<< HEAD
 	response(models.ZookeeperMetrics(), c.Ctx)
 }
+=======
+	r := models.ZookeeperMetrics()
+	c.Ctx.Output.Body([]byte(r))
+}
+>>>>>>> 2479a3b075081ee78e98df98a063aee8ee2b526b
