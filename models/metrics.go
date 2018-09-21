@@ -437,7 +437,10 @@ func JavaMetrics() string {
 			ret += v.Info + "\n"
 		}
 	}
-
+	ret = strings.Replace(ret, `java_heap_bytes{type="committed",`, `java_heap_committed_bytes{`, -1)
+	ret = strings.Replace(ret, `java_heap_bytes{type="init",`, `java_heap_init_bytes{`, -1)
+	ret = strings.Replace(ret, `java_heap_bytes{type="used",`, `java_heap_used_bytes{`, -1)
+	ret = strings.Replace(ret, `java_heap_bytes{type="max",`, `java_heap_max_bytes{`, -1)
 	return overFilters(ret, config.JavaConfig().BaseCfg.Filters)
 }
 
