@@ -317,11 +317,10 @@ func (c *AliveController) AliveMetrics() {
 					alive = true
 				}
 
-				if !alive {
-					continue
+				if alive {
+					pRetArgs = pArgs
+					break
 				}
-
-				pRetArgs = pArgs
 			}
 
 			if alive {
