@@ -1,0 +1,22 @@
+{
+  "AcUrl": "http://192.168.10.248:28080/exception",
+  "LocalIp": "127.0.0.1",
+  "Retry": 2,
+  "TimeoutSec": 3,
+  "UploadDelaySec": 60,
+  "UploadQueueSize": 1024,
+  "Groups": [
+    "APP",
+    "K米网",
+    "平台",
+    "网关",
+    "微加",
+    "预订",
+    "大数据",
+    "基础服务",
+    "管理系统",
+    "视易",
+    "运维",
+    "系统支撑"
+  ]
+}
