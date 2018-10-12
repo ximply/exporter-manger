@@ -35,6 +35,7 @@ func Init() *gin.Engine {
 	router := gin.Default()
 	router.Use(gin.Recovery())
 	router.GET("/", Index)
+	router.POST("/exception", Exception)
 
 	return router
 }

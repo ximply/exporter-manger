@@ -4,7 +4,18 @@ import (
 	"github.com/astaxie/beego"
 	"time"
 	"strings"
+	"github.com/jinzhu/configor"
 )
+
+type UConfig struct {
+	AcUrl string
+	LocalIp string
+	Retry int
+	TimeoutSec int
+	UploadDelaySec int
+	UploadQueueSize int
+	Groups []string
+}
 
 type GlobalConfig struct {
 	NodeCfg Node
@@ -214,9 +225,15 @@ type Zookeeper struct {
 	BaseCfg BaseConfig
 }
 
+var globalUCfg UConfig
 var globalCfg GlobalConfig
 
 func Init() {
+	// uconfig
+	if configor.Load(&globalUCfg, "./config.json") != nil {
+		panic("Error config")
+	}
+
 	// company
 	globalCfg.CompanyCfg.BaseCfg.Enable = beego.AppConfig.DefaultBool("company_exporter", false)
 	if CompanyConfig().BaseCfg.Enable {
@@ -1154,6 +1171,10 @@ func Init() {
 		}
 		globalCfg.ZookeeperCfg.BaseCfg.Filters = m
 	}
+}
+
+func UConfigs() UConfig {
+	return globalUCfg
 }
 
 func CompanyConfig() Company {

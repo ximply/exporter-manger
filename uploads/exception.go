@@ -6,11 +6,9 @@ import (
 	"io/ioutil"
 	"github.com/json-iterator/go"
 	"github.com/ximply/exporter-manger/structs"
-	"github.com/ximply/exporter-manger/models"
 	"github.com/ximply/exporter-manger/config"
 	"time"
 	"github.com/parnurzeal/gorequest"
-	"fmt"
 )
 
 func Exception(c *gin.Context) {
@@ -53,7 +51,6 @@ func packExceptionData() {
 }
 
 func exceptionToAlertCenter(d []byte) {
-	fmt.Println(string(d))
 	req := gorequest.New()
 	req.BounceToRawString = true
 	req.Retry(config.UConfigs().Retry, time.Duration(config.UConfigs().TimeoutSec) * time.Second,
