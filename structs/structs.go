@@ -9,4 +9,5 @@ type ExceptionItem struct {
 	Errorcode string
 	Errordesc string
 	Errormsg string
+	Traceid string
 }

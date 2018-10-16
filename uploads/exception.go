@@ -9,6 +9,7 @@ import (
 	"github.com/ximply/exporter-manger/config"
 	"time"
 	"github.com/parnurzeal/gorequest"
+	"fmt"
 )
 
 func Exception(c *gin.Context) {
@@ -29,7 +30,6 @@ func Exception(c *gin.Context) {
 		c.JSON(http.StatusOK, `{"ret":-1,"msg":"error group"}`)
 		return
 	}
-
 	ExceptionQueue().Put(&ex)
 	c.JSON(http.StatusOK, `{"ret":0,"msg":""}`)
 }
@@ -41,7 +41,7 @@ func packExceptionData() {
 		gets, _ := ExceptionQueue().Gets(its)
 		count := int(gets)
 		if count > 0 {
-			d, err := json.Marshal(its[0 : count - 1])
+			d, err := json.Marshal(its[0 : count])
 			if err == nil {
 				go exceptionToAlertCenter(d)
 			}
@@ -53,9 +53,10 @@ func packExceptionData() {
 func exceptionToAlertCenter(d []byte) {
 	req := gorequest.New()
 	req.BounceToRawString = true
-	req.Retry(config.UConfigs().Retry, time.Duration(config.UConfigs().TimeoutSec) * time.Second,
+	r, b, _ := req.Retry(config.UConfigs().Retry, time.Duration(config.UConfigs().TimeoutSec) * time.Second,
 		http.StatusBadRequest, http.StatusInternalServerError).
 		Post(config.UConfigs().AcUrl).SendString(string(d)).End()
+	fmt.Println(r.Status, b)
 }
 
 func StartUploadException() {
