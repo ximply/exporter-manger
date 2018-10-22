@@ -1,4 +1,5 @@
 {
+  "ListenPort": "55555",
   "AcUrl": "http://192.168.10.248:28080/exception",
   "LocalIp": "127.0.0.1",
   "Retry": 2,

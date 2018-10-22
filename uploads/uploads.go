@@ -27,6 +27,12 @@ func ExceptionQueue() *queue.EsQueue {
 	return gUploadExceptionQueue
 }
 
+func Start() {
+	go func() {
+		Init().Run("127.0.0.1:" + config.UConfigs().ListenPort)
+	}()
+}
+
 func Init() *gin.Engine {
 	gUploadExceptionQueue = queue.NewQueue(uint32(config.UConfigs().UploadQueueSize))
 	StartUploadException()
@@ -36,6 +42,7 @@ func Init() *gin.Engine {
 	router.Use(gin.Recovery())
 	router.GET("/", Index)
 	router.POST("/exception", Exception)
+	router.POST("/javainfo", JavaInfo)
 
 	return router
 }

@@ -9,8 +9,6 @@ import (
 
 func main() {
 	models.Init()
-	go func() {
-		uploads.Init().Run("127.0.0.1:55555")
-	}()
+	uploads.Start()
 	beego.Run()
 }
