@@ -8,6 +8,7 @@ import (
 )
 
 type UConfig struct {
+	ListenPort string
 	AcUrl string
 	LocalIp string
 	Retry int
