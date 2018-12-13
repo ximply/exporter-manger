@@ -24,6 +24,7 @@ type GlobalConfig struct {
 	NginxVtsCfg NginxVts
 	PhpfpmCfg Phpfpm
 	RedisCfg Redis
+	Redis2Cfg Redis2
 	MemcachedCfg Memcached
 	MysqlCfg Mysql
 	MultiMysqlCfg MultiMysql
@@ -101,6 +102,10 @@ type Phpfpm struct {
 }
 
 type Redis struct {
+	BaseCfg BaseConfig
+}
+
+type Redis2 struct {
 	BaseCfg BaseConfig
 }
 
@@ -463,6 +468,30 @@ func Init() {
 			m[s] = s
 		}
 		globalCfg.RedisCfg.BaseCfg.Filters = m
+	}
+
+	// redis2 exporter
+	globalCfg.Redis2Cfg.BaseCfg.Enable = beego.AppConfig.DefaultBool("redis2_exporter", false)
+	if Redis2Config().BaseCfg.Enable {
+		globalCfg.Redis2Cfg.BaseCfg.UnixSockFile = beego.AppConfig.DefaultString("redis2_exporter.unix_sock",
+			"/dev/shm/redis2_exporter.sock")
+		globalCfg.Redis2Cfg.BaseCfg.MetricsPath = beego.AppConfig.DefaultString("redis2_exporter.metrics_path",
+			"/metrics")
+		globalCfg.Redis2Cfg.BaseCfg.MetricsRouter = beego.AppConfig.DefaultString("redis2_exporter.metrics_router",
+			"/redis2")
+		globalCfg.Redis2Cfg.BaseCfg.Timeout = time.Duration(beego.AppConfig.DefaultInt("redis2_exporter.timeout",
+			5)) * time.Second
+		filters := strings.Split(beego.AppConfig.DefaultString("redis2_exporter.filters", ""),
+			",")
+		var m map[string]string
+		m = make(map[string]string)
+		for _, s := range filters {
+			if len(s) == 0 {
+				continue
+			}
+			m[s] = s
+		}
+		globalCfg.Redis2Cfg.BaseCfg.Filters = m
 	}
 
 	// memcached exporter
@@ -1212,6 +1241,10 @@ func PhpfpmConfig() Phpfpm {
 
 func RedisConfig() Redis {
 	return globalCfg.RedisCfg
+}
+
+func Redis2Config() Redis2 {
+	return globalCfg.Redis2Cfg
 }
 
 func MemcachedConfig() Memcached {

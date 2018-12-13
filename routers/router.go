@@ -62,6 +62,11 @@ func init() {
 		beego.Router(config.RedisConfig().BaseCfg.MetricsRouter,
 			&controllers.RedisController{}, "get:RedisMetrics")
 	}
+	// redis2 exporter
+	if config.Redis2Config().BaseCfg.Enable {
+		beego.Router(config.Redis2Config().BaseCfg.MetricsRouter,
+			&controllers.Redis2Controller{}, "get:Redis2Metrics")
+	}
 	// memcached exporter
 	if config.MemcachedConfig().BaseCfg.Enable {
 		beego.Router(config.MemcachedConfig().BaseCfg.MetricsRouter,

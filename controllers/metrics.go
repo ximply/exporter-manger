@@ -123,6 +123,15 @@ func (c *RedisController) RedisMetrics() {
 	response(models.RedisMetrics(), c.Ctx)
 }
 
+// redis2 exporter
+type Redis2Controller struct {
+	beego.Controller
+}
+
+func (c *Redis2Controller) Redis2Metrics() {
+	response(models.Redis2Metrics(), c.Ctx)
+}
+
 // memcached exporter
 type MemchachedController struct {
 	beego.Controller
