@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/ximply/exporter-manger/config"
 	_ "github.com/ximply/exporter-manger/routers"
 	"github.com/astaxie/beego"
 	"github.com/ximply/exporter-manger/models"
@@ -9,6 +10,8 @@ import (
 
 func main() {
 	models.Init()
-	uploads.Start()
+	if config.UConfigs().On {
+		uploads.Start()
+	}
 	beego.Run()
 }

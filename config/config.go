@@ -8,6 +8,7 @@ import (
 )
 
 type UConfig struct {
+	On bool
 	ListenPort string
 	AcUrl string
 	LocalIp string
